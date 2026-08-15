@@ -13,6 +13,8 @@ Unicode Kashmiri (Perso-Arabic / Nastaliq) typing for the browser, with a WYSIWY
 - **Curated fonts**: Noto Nastaliq Urdu, Gulmarg Nastaliq (self-hosted), Scheherazade New — plus a font size selector
 - **One-line editor** (drag its bottom edge to grow) plus a **Preview** panel that
   shows the whole document, rendered or as raw Markdown
+- **Minimal view** hides settings, formatting, file actions, layer selectors,
+  and help menus while keeping Preview, the editor, and keyboard available
 - **Open / Download `.md`**, copy Markdown, and debounced browser autosave
 
 ## Quick start

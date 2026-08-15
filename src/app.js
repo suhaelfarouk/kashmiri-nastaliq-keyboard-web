@@ -13,6 +13,7 @@ import { createKeyboard } from "./ui/keyboard.js";
 import { createCharacterPalette } from "./ui/character-palette.js";
 import { createFormatToolbar } from "./ui/format-toolbar.js";
 import { createPreview } from "./ui/preview.js";
+import { createMenuVisibility } from "./ui/menu-visibility.js";
 import { createAutosave } from "./ui/autosave.js";
 import { bindOpenMarkdown, downloadMarkdown } from "./ui/file-io.js";
 
@@ -93,6 +94,11 @@ export function initApp(root = document) {
     modesEl: root.querySelector("#previewModes"),
     countEl: root.querySelector("#previewCount"),
     editor,
+  });
+
+  const menuVisibility = createMenuVisibility({
+    app: root.querySelector(".app"),
+    button: root.querySelector("#menusToggle"),
   });
 
   function setFileName(name) {
@@ -259,6 +265,7 @@ export function initApp(root = document) {
   characterPalette.init();
   formatToolbar.init();
   preview.init();
+  menuVisibility.init();
   if (dualLayerToggle?.checked) keyboard.setDualLayer(true);
   renderExamples();
   editor.updateStatus();

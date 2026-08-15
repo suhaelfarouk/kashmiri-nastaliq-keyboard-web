@@ -55,6 +55,32 @@ body {
   gap: 16px;
 }
 
+/* ---------- View controls ---------- */
+.view-controls {
+  position: sticky;
+  top: 6px;
+  z-index: 20;
+  display: flex;
+  justify-content: flex-end;
+  gap: 6px;
+  pointer-events: none;
+}
+
+.view-controls .btn {
+  background: color-mix(in srgb, var(--card) 94%, transparent);
+  box-shadow: 0 1px 4px rgb(0 0 0 / 8%);
+  backdrop-filter: blur(8px);
+  pointer-events: auto;
+}
+
+.minimal-ui .optional-menu {
+  display: none;
+}
+
+.minimal-ui {
+  gap: 10px;
+}
+
 /* ---------- Header ---------- */
 .header {
   display: flex;
@@ -923,11 +949,21 @@ kbd {
 @media (max-width: 700px) {
   .app {
     width: 100%;
-    padding: 12px 10px 28px;
+    padding: 8px 6px 20px;
+    gap: 10px;
   }
 
   .controls {
     width: 100%;
+  }
+
+  .view-controls {
+    top: 4px;
+  }
+
+  .view-controls .btn {
+    min-height: 34px;
+    padding: 6px 10px;
   }
 
   .editor-surface {
@@ -953,13 +989,74 @@ kbd {
     padding: 8px 10px;
   }
 
+  .keyboard-card {
+    padding: 6px;
+  }
+
+  .layer-select {
+    flex-wrap: nowrap;
+    gap: 4px;
+    margin-bottom: 6px;
+  }
+
+  .layer-button {
+    flex: 1;
+    min-width: 0;
+    padding: 6px 3px;
+    white-space: nowrap;
+  }
+
+  .keyboard-scroll {
+    overflow-x: visible;
+  }
+
+  .keyboard {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .row {
+    gap: 2px;
+    margin-bottom: 2px;
+  }
+
   .key {
-    min-height: 46px;
-    font-size: 18px;
+    min-height: 40px;
+    padding: 2px 1px 3px;
+    border-radius: 4px;
+    font-size: clamp(14px, 4.2vw, 18px);
+  }
+
+  .key::after {
+    top: 2px;
+    left: 2px;
+    font-size: 6px;
+  }
+
+  .key-space,
+  .key-modifier {
+    font-size: 10px !important;
+  }
+
+  .key-backspace {
+    font-size: 14px !important;
   }
 
   .keyboard.dual-layer .key {
-    font-size: 16px;
+    gap: 2px;
+    font-size: clamp(11px, 3.4vw, 14px);
+  }
+
+  .face-control {
+    font-size: 7px;
+  }
+
+  .face-mark {
+    transform: translateY(4px);
+  }
+
+  .face-mark-below {
+    transform: translateY(-17px);
   }
 
   .character-palette {
@@ -968,6 +1065,25 @@ kbd {
 
   .summary-note {
     display: none;
+  }
+}
+
+@media (max-width: 380px) {
+  .app {
+    padding-inline: 4px;
+  }
+
+  .keyboard-card {
+    padding: 4px;
+  }
+
+  .key {
+    min-height: 36px;
+    font-size: 14px;
+  }
+
+  .layer-button {
+    font-size: 0.6875rem;
   }
 }
 

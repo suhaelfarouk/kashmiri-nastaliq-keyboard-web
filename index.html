@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="ks" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Kashmiri Nastaliq Keyboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preload" href="/fonts/GulmargNastaliq.woff2" as="font" type="font/woff2" crossorigin>
+  <link id="googleFonts" href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;500;600;700&family=Scheherazade+New:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<main class="app" dir="rtl">
+  <header class="header">
+    <div class="controls" dir="ltr">
+      <label class="field">
+        <input id="physicalToggle" type="checkbox" checked>
+        <span>Keyboard mapping</span>
+      </label>
+      <label class="field">
+        <input id="dualLayerToggle" type="checkbox">
+        <span>Show both layers</span>
+      </label>
+      <label class="field">
+        <span>Mode</span>
+        <select id="modeSelect">
+          <option value="phonetic">Smart Kashmiri</option>
+          <option value="direct">Direct QWERTY</option>
+        </select>
+      </label>
+      <label class="field">
+        <span>Font</span>
+        <select id="fontSelect"></select>
+      </label>
+      <label class="field">
+        <span>Size</span>
+        <select id="fontSizeSelect"></select>
+      </label>
+      <button id="clearBtn" type="button" class="btn">Clear</button>
+    </div>
+  </header>
+
+  <section class="card editor-card">
+    <div id="formatToolbar" class="format-toolbar" dir="ltr" role="toolbar" aria-label="Formatting"></div>
+    <div id="editor" class="editor-surface" lang="ks" dir="rtl"></div>
+    <div class="toolbar" dir="ltr">
+      <button id="openBtn" type="button" class="btn">Open</button>
+      <button id="downloadBtn" type="button" class="btn">Download</button>
+      <button id="copyBtn" type="button" class="btn">Copy Markdown</button>
+      <button id="previewBtn" type="button" class="btn" aria-expanded="false" aria-controls="previewCard">Preview</button>
+      <button id="backspaceBtn" type="button" class="btn">⌫ Backspace</button>
+      <button id="spaceBtn" type="button" class="btn">Space</button>
+      <span id="layerStatus" class="badge" aria-live="polite">Base</span>
+      <span id="fileName" class="badge file-badge" aria-live="polite">document.md</span>
+      <span id="status" class="status" aria-live="polite"></span>
+    </div>
+    <input id="openFileInput" type="file" accept=".md,text/markdown,text/plain" hidden>
+  </section>
+
+  <section id="previewCard" class="card preview-card" dir="rtl" hidden>
+    <div class="preview-head" dir="ltr">
+      <span class="preview-title">Preview</span>
+      <div id="previewModes" class="preview-modes" role="group" aria-label="Preview mode">
+        <button type="button" class="preview-mode active" data-preview="rendered" aria-pressed="true">Rendered</button>
+        <button type="button" class="preview-mode" data-preview="markdown" aria-pressed="false">Markdown</button>
+      </div>
+      <span id="previewCount" class="status"></span>
+    </div>
+    <div id="previewBody" class="preview-body" lang="ks" dir="rtl"></div>
+  </section>
+
+  <section class="card keyboard-card">
+    <div id="layerSelect" class="layer-select" dir="ltr" role="group" aria-label="Keyboard layer">
+      <button type="button" class="layer-button" data-layer="base" aria-pressed="true">Normal</button>
+      <button type="button" class="layer-button" data-layer="shift" aria-pressed="false">Shift</button>
+      <button type="button" class="layer-button" data-layer="alt" aria-pressed="false">Alt</button>
+      <button type="button" class="layer-button" data-layer="altShift" aria-pressed="false">Alt + Shift</button>
+    </div>
+    <div class="keyboard-scroll">
+      <div class="keyboard" id="keyboard" aria-label="Kashmiri keyboard"></div>
+    </div>
+  </section>
+
+  <details class="card palette-card" dir="ltr">
+    <summary>
+      <span>More Kashmiri characters</span>
+      <span class="summary-note">vowels, marks, loan letters & punctuation</span>
+    </summary>
+    <div class="palette-intro">
+      Click a character to insert it at the cursor. Combining marks are shown on
+      their own and attach to whatever letter precedes them.
+    </div>
+    <div id="characterPalette" class="character-palette" lang="ks"></div>
+  </details>
+
+  <details class="card help-card" dir="ltr">
+    <summary>How to type</summary>
+    <div class="help-body">
+      <p>
+        <strong>WYSIWYG Markdown:</strong> format with the toolbar above the editor.
+        Open and download <code>.md</code> files; drafts autosave in this browser.
+        <strong>QWERTY layout:</strong> keys follow the same left-to-right order as a normal English keyboard.
+        <strong>Phonetic mode:</strong> type Latin sequences such as
+        <kbd>sh</kbd> → ش, <kbd>kh</kbd> → خ, <kbd>chh</kbd> → چھ, <kbd>aa</kbd> → آ, <kbd>t'</kbd> → ٹ.
+        Vowel controls: <kbd>~</kbd> → ٟ, <kbd>^</kbd> → ٖ, <kbd>:</kbd> → ٗ.
+        <strong>Direct QWERTY</strong> uses one key per character.
+      </p>
+      <p>
+        <strong>Layers:</strong> <kbd>Shift</kbd> gives alternate letters,
+        <kbd>Alt</kbd> gives aspirated digraphs, vowel sequences and combining marks, and
+        <kbd>Alt</kbd>+<kbd>Shift</kbd> gives loan-word consonants, precomposed vowels and punctuation.
+        Hold the physical keys, or pick a layer with the buttons above the keyboard.
+        <strong>Show both layers</strong> prints the alternate character in red next to the base one.
+        <strong>Font</strong> and <strong>Size</strong> change the whole document; both are saved
+        with your draft but never written into the Markdown, so files stay portable.
+      </p>
+
+      <div class="help-group">
+        <h2>Smart typing examples</h2>
+        <div id="smartExamples" class="chip-row"></div>
+      </div>
+
+      <div class="help-group">
+        <h2>Vowel helpers</h2>
+        <div id="vowelHelpers" class="chip-row"></div>
+      </div>
+    </div>
+  </details>
+
+</main>
+<script type="module" src="/src/main.js"></script>
+</body>
+</html>

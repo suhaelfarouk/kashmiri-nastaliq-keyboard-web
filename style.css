@@ -1,0 +1,987 @@
+/* Compact neutral UI — shadcn-inspired, no ornamentation. */
+
+/* Kashmiri Nastaliq face that Google Fonts does not host. */
+@font-face {
+  font-family: "Gulmarg Nastaliq";
+  src: local("Gulmarg Nastaleeq"),
+       url("/fonts/GulmargNastaliq.woff2") format("woff2");
+  font-weight: 400 700;
+  font-display: swap;
+}
+
+:root {
+  --bg: #fafafa;
+  --fg: #0a0a0a;
+  --muted: #737373;
+  --muted-fg: #525252;
+  --border: #e5e5e5;
+  --card: #ffffff;
+  --accent: #171717;
+  --accent-fg: #fafafa;
+  --shift: #b91c1c;
+  --alt: #4338ca;
+  --ring: #0a0a0a;
+  --radius: 8px;
+  --font: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-nastaliq: "Noto Nastaliq Urdu", serif;
+  --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+
+  /* Document typography, shared by the editor and the preview. */
+  --editor-font: var(--font-nastaliq);
+  --editor-size: 28px;
+  --editor-leading: 2.05;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--fg);
+  font: 400 14px/1.5 var(--font);
+}
+
+.app {
+  width: min(1040px, 96vw);
+  margin: 0 auto;
+  padding: 16px 0 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ---------- Header ---------- */
+.header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  direction: ltr;
+}
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+
+.field {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8125rem;
+  color: var(--muted-fg);
+  cursor: pointer;
+  user-select: none;
+}
+
+.field select {
+  border: 1px solid var(--border);
+  border-radius: calc(var(--radius) - 2px);
+  background: var(--card);
+  color: var(--fg);
+  padding: 5px 8px;
+  font: inherit;
+}
+
+/* ---------- Shared controls ---------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 7px 12px;
+  border: 1px solid var(--border);
+  border-radius: calc(var(--radius) - 2px);
+  background: var(--card);
+  color: var(--fg);
+  font: 500 0.8125rem/1 var(--font);
+  cursor: pointer;
+  transition: background 0.12s ease, border-color 0.12s ease;
+}
+
+.btn:hover {
+  background: #f5f5f5;
+}
+
+.btn:active {
+  background: #eee;
+}
+
+:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+/* ---------- Cards ---------- */
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+/* ---------- Editor ---------- */
+.editor-card {
+  overflow: hidden;
+}
+
+.format-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  background: #fafafa;
+}
+
+.format-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 30px;
+  padding: 4px 8px;
+  border: 1px solid transparent;
+  border-radius: calc(var(--radius) - 2px);
+  background: transparent;
+  color: var(--muted-fg);
+  font: 500 0.75rem/1 var(--font);
+  cursor: pointer;
+  transition: background 0.12s ease, color 0.12s ease, border-color 0.12s ease;
+}
+
+.format-button:hover {
+  background: #f0f0f0;
+  color: var(--fg);
+}
+
+.format-button.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-fg);
+}
+
+.format-separator {
+  width: 1px;
+  height: 18px;
+  margin: 0 4px;
+  background: var(--border);
+}
+
+/* Exactly one line of room. Drag the bottom edge to grow it; use Preview to
+   read the whole document. */
+.editor-surface {
+  --editor-pad-block: 14px;
+  height: calc(var(--editor-size) * var(--editor-leading) + var(--editor-pad-block) * 2);
+  min-height: calc(var(--editor-size) * var(--editor-leading) + var(--editor-pad-block) * 2);
+  max-height: 70vh;
+  overflow-y: auto;
+  resize: vertical;
+}
+
+.editor-surface .tiptap,
+.editor-surface .ProseMirror {
+  min-height: calc(var(--editor-size) * var(--editor-leading));
+  padding: var(--editor-pad-block) clamp(16px, 4vw, 40px);
+  outline: none;
+  color: var(--fg);
+  font: 400 var(--editor-size) / var(--editor-leading) var(--editor-font);
+  text-align: right;
+  direction: rtl;
+  caret-color: var(--fg);
+  overflow-wrap: break-word;
+}
+
+.editor-surface .ProseMirror:focus-visible {
+  box-shadow: none;
+}
+
+.editor-card:focus-within {
+  border-color: #d4d4d4;
+}
+
+.editor-surface .ProseMirror > * + * {
+  margin-top: 0.65em;
+}
+
+.editor-surface .ProseMirror p {
+  margin: 0 0 0.6em;
+}
+
+.editor-surface .ProseMirror p:last-child {
+  margin-bottom: 0;
+}
+
+.editor-surface .ProseMirror h1,
+.editor-surface .ProseMirror h2,
+.editor-surface .ProseMirror h3 {
+  margin: 0.7em 0 0.5em;
+  font-weight: 600;
+  line-height: 1.65;
+}
+
+.editor-surface .ProseMirror h1 { font-size: 1.55em; }
+.editor-surface .ProseMirror h2 { font-size: 1.3em; }
+.editor-surface .ProseMirror h3 { font-size: 1.12em; }
+
+.editor-surface .ProseMirror ul,
+.editor-surface .ProseMirror ol {
+  margin: 0 0 0.7em;
+  padding-inline-start: 1.6em;
+}
+
+.editor-surface .ProseMirror li + li {
+  margin-top: 0.2em;
+}
+
+.editor-surface .ProseMirror blockquote {
+  margin: 0 0 0.7em;
+  padding: 0.2em 1em;
+  border-inline-start: 3px solid var(--border);
+  color: var(--muted-fg);
+}
+
+.editor-surface .ProseMirror code {
+  direction: ltr;
+  unicode-bidi: isolate;
+  font: 500 0.75em / 1.4 var(--font-mono);
+  padding: 0.1em 0.35em;
+  border-radius: 4px;
+  background: #f5f5f5;
+}
+
+.editor-surface .ProseMirror pre {
+  direction: ltr;
+  text-align: left;
+  margin: 0 0 0.85em;
+  padding: 12px 14px;
+  border-radius: calc(var(--radius) - 2px);
+  background: #f5f5f5;
+  overflow-x: auto;
+}
+
+.editor-surface .ProseMirror pre code {
+  padding: 0;
+  background: transparent;
+  font-size: 0.7em;
+}
+
+.editor-surface .ProseMirror a {
+  color: #1d4ed8;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.editor-surface .ProseMirror hr {
+  border: 0;
+  border-top: 1px solid var(--border);
+  margin: 1em 0;
+}
+
+.editor-surface .ProseMirror p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  float: right;
+  color: #a3a3a3;
+  pointer-events: none;
+  height: 0;
+}
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-top: 1px solid var(--border);
+  background: #fafafa;
+}
+
+.btn.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-fg);
+}
+
+/* ---------- Preview ---------- */
+.preview-card {
+  overflow: hidden;
+}
+
+.preview-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  background: #fafafa;
+}
+
+.preview-title {
+  font: 500 0.8125rem/1 var(--font);
+  color: var(--muted-fg);
+}
+
+.preview-modes {
+  display: inline-flex;
+  gap: 4px;
+}
+
+.preview-mode {
+  padding: 5px 10px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--card);
+  color: var(--muted-fg);
+  font: 500 0.75rem/1 var(--font);
+  cursor: pointer;
+  transition: background 0.12s ease, color 0.12s ease, border-color 0.12s ease;
+}
+
+.preview-mode:hover {
+  background: #f5f5f5;
+}
+
+.preview-mode.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-fg);
+}
+
+.preview-body {
+  max-height: min(70vh, 760px);
+  overflow-y: auto;
+}
+
+.preview-rendered {
+  padding: 24px clamp(20px, 5vw, 56px) 36px;
+  color: var(--fg);
+  font: 400 var(--editor-size) / var(--editor-leading) var(--editor-font);
+  text-align: right;
+  direction: rtl;
+  overflow-wrap: break-word;
+}
+
+.preview-rendered > * + * {
+  margin-top: 0.65em;
+}
+
+.preview-rendered p {
+  margin: 0 0 0.6em;
+}
+
+.preview-rendered h1,
+.preview-rendered h2,
+.preview-rendered h3 {
+  margin: 0.7em 0 0.5em;
+  font-weight: 600;
+  line-height: 1.65;
+}
+
+.preview-rendered h1 { font-size: 1.55em; }
+.preview-rendered h2 { font-size: 1.3em; }
+.preview-rendered h3 { font-size: 1.12em; }
+
+.preview-rendered ul,
+.preview-rendered ol {
+  margin: 0 0 0.7em;
+  padding-inline-start: 1.6em;
+}
+
+.preview-rendered li + li {
+  margin-top: 0.2em;
+}
+
+.preview-rendered blockquote {
+  margin: 0 0 0.7em;
+  padding: 0.2em 1em;
+  border-inline-start: 3px solid var(--border);
+  color: var(--muted-fg);
+}
+
+.preview-rendered code {
+  direction: ltr;
+  unicode-bidi: isolate;
+  font: 500 0.75em / 1.4 var(--font-mono);
+  padding: 0.1em 0.35em;
+  border-radius: 4px;
+  background: #f5f5f5;
+}
+
+.preview-rendered pre {
+  direction: ltr;
+  text-align: left;
+  margin: 0 0 0.85em;
+  padding: 12px 14px;
+  border-radius: calc(var(--radius) - 2px);
+  background: #f5f5f5;
+  overflow-x: auto;
+}
+
+.preview-rendered pre code {
+  padding: 0;
+  background: transparent;
+  font-size: 0.7em;
+}
+
+.preview-rendered a {
+  color: #1d4ed8;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.preview-rendered hr {
+  border: 0;
+  border-top: 1px solid var(--border);
+  margin: 1em 0;
+}
+
+.preview-markdown {
+  margin: 0;
+  padding: 20px clamp(16px, 4vw, 40px);
+  direction: ltr;
+  text-align: left;
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+  color: var(--muted-fg);
+  font: 400 0.8125rem / 1.7 var(--font-mono);
+}
+
+.badge {
+  font: 500 0.75rem/1 var(--font-mono);
+  color: var(--muted);
+  padding: 4px 8px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--card);
+}
+
+.file-badge {
+  max-width: 160px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.status {
+  margin-left: auto;
+  color: var(--muted);
+  font: 400 0.75rem var(--font-mono);
+}
+
+/* ---------- Keyboard ---------- */
+.keyboard-card {
+  padding: 12px;
+}
+
+.layer-select {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.layer-button {
+  padding: 6px 12px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--card);
+  color: var(--muted-fg);
+  font: 500 0.75rem/1 var(--font);
+  cursor: pointer;
+  transition: background 0.12s ease, color 0.12s ease, border-color 0.12s ease;
+}
+
+.layer-button:hover {
+  background: #f5f5f5;
+}
+
+.layer-button.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-fg);
+}
+
+.keyboard-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.keyboard {
+  direction: ltr;
+  min-width: 640px;
+}
+
+.row {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+
+.row:last-child {
+  margin-bottom: 0;
+}
+
+.key {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  min-height: 52px;
+  padding: 4px 4px 6px;
+  border: 1px solid var(--border);
+  border-radius: calc(var(--radius) - 2px);
+  background: var(--card);
+  color: var(--fg);
+  font: 400 24px / 1.2 var(--font-nastaliq);
+  direction: rtl;
+  cursor: pointer;
+  transition: background 0.1s ease, border-color 0.1s ease;
+}
+
+.key:hover {
+  background: #f5f5f5;
+}
+
+.key:active {
+  background: #eee;
+}
+
+.key::after {
+  content: attr(data-label);
+  position: absolute;
+  left: 5px;
+  top: 3px;
+  font: 9px / 1 var(--font-mono);
+  color: var(--muted);
+  direction: ltr;
+}
+
+.key-space {
+  flex: 3.2;
+  font: 500 13px var(--font) !important;
+  direction: ltr !important;
+}
+
+.key-space::after {
+  display: none;
+}
+
+.key-modifier {
+  flex: 1.3;
+  font: 500 13px var(--font) !important;
+  direction: ltr !important;
+  background: var(--accent);
+  color: var(--accent-fg);
+  border-color: var(--accent);
+}
+
+.key-modifier::after {
+  display: none;
+}
+
+.key-shift.active {
+  background: var(--shift);
+  border-color: var(--shift);
+  color: #fff;
+}
+
+.key-alt.active {
+  background: var(--alt);
+  border-color: var(--alt);
+  color: #fff;
+}
+
+.key-backspace {
+  flex: 1.2;
+  font: 500 16px var(--font) !important;
+  direction: ltr !important;
+}
+
+.key-backspace::after {
+  display: none;
+}
+
+/* Swap display (default): one face per active layer */
+.face-base {
+  display: block;
+}
+
+.face-shift,
+.face-alt,
+.face-alt-shift {
+  display: none;
+}
+
+.face-shift {
+  color: var(--shift);
+}
+
+/* Invisible formatting characters are captioned instead of drawn. */
+.face-control {
+  font: 500 10px / 2.6 var(--font-mono);
+  letter-spacing: 0.02em;
+}
+
+/* Marks carry no base letter, so enlarge them and pull them back over the
+   button: with no carrier glyph they otherwise hang off the invisible baseline. */
+.face-mark,
+.face-mark-below {
+  font-size: 1.5em;
+}
+
+.face-mark {
+  transform: translateY(6px);
+}
+
+.face-mark-below {
+  transform: translateY(-24px);
+}
+
+.face-alt,
+.face-alt-shift {
+  color: var(--alt);
+}
+
+.keyboard.shift-active .face-base,
+.keyboard.alt-active .face-base {
+  display: none;
+}
+
+.keyboard.shift-active:not(.alt-active) .face-shift {
+  display: block;
+}
+
+.keyboard.alt-active:not(.shift-active) .face-alt {
+  display: block;
+}
+
+.keyboard.alt-active.shift-active .face-alt-shift {
+  display: block;
+}
+
+.keyboard.shift-active:not(.alt-active) .key {
+  border-color: #fecaca;
+  background: #fef2f2;
+}
+
+.keyboard.alt-active .key {
+  border-color: #c7d2fe;
+  background: #eef2ff;
+}
+
+.keyboard.shift-active .key-space,
+.keyboard.shift-active .key-backspace,
+.keyboard.alt-active .key-space,
+.keyboard.alt-active .key-backspace {
+  background: var(--card);
+  border-color: var(--border);
+}
+
+.keyboard.shift-active .key-modifier,
+.keyboard.alt-active .key-modifier {
+  background: var(--accent);
+  color: var(--accent-fg);
+  border-color: var(--accent);
+}
+
+.keyboard .key-shift.active {
+  background: var(--shift);
+  border-color: var(--shift);
+  color: #fff;
+}
+
+.keyboard .key-alt.active {
+  background: var(--alt);
+  border-color: var(--alt);
+  color: #fff;
+}
+
+/* Dual-layer display: the active pair of faces side by side */
+.keyboard.dual-layer .key {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: baseline;
+  justify-content: center;
+  gap: 6px;
+  font-size: 20px;
+}
+
+.keyboard.dual-layer .key-space,
+.keyboard.dual-layer .key-modifier,
+.keyboard.dual-layer .key-backspace {
+  display: block;
+}
+
+.keyboard.dual-layer .face-base,
+.keyboard.dual-layer .face-shift,
+.keyboard.dual-layer .face-alt,
+.keyboard.dual-layer .face-alt-shift {
+  transition: opacity 0.12s ease;
+}
+
+.keyboard.dual-layer:not(.alt-active) .face-base,
+.keyboard.dual-layer:not(.alt-active) .face-shift,
+.keyboard.dual-layer.alt-active .face-alt,
+.keyboard.dual-layer.alt-active .face-alt-shift {
+  display: block;
+}
+
+.keyboard.dual-layer .face-shift,
+.keyboard.dual-layer .face-alt-shift {
+  font-size: 0.85em;
+  opacity: 0.7;
+}
+
+.keyboard.dual-layer:not(.alt-active) .key.same-face .face-shift {
+  display: none;
+}
+
+.keyboard.dual-layer.shift-active:not(.alt-active) .face-base,
+.keyboard.dual-layer.alt-active.shift-active .face-alt {
+  opacity: 0.28;
+}
+
+.keyboard.dual-layer.shift-active:not(.alt-active) .face-shift,
+.keyboard.dual-layer.alt-active.shift-active .face-alt-shift {
+  opacity: 1;
+  font-weight: 500;
+}
+
+/* ---------- Character palette & help ---------- */
+.palette-card,
+.help-card {
+  padding: 0;
+}
+
+.palette-card summary,
+.help-card summary {
+  cursor: pointer;
+  padding: 12px 16px;
+  font-weight: 500;
+  list-style: none;
+  direction: ltr;
+}
+
+.palette-card summary::-webkit-details-marker,
+.help-card summary::-webkit-details-marker {
+  display: none;
+}
+
+.palette-card summary::before,
+.help-card summary::before {
+  content: "▸ ";
+  color: var(--muted);
+}
+
+.palette-card[open] summary::before,
+.help-card[open] summary::before {
+  content: "▾ ";
+}
+
+.summary-note {
+  margin-left: 8px;
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-weight: 400;
+}
+
+.palette-intro {
+  padding: 10px 16px;
+  border-top: 1px solid var(--border);
+  color: var(--muted);
+  font-size: 0.8125rem;
+}
+
+.character-palette {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px 24px;
+  padding: 4px 16px 18px;
+  direction: ltr;
+}
+
+.character-group h3 {
+  margin: 0 0 8px;
+  color: var(--muted-fg);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.character-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  direction: rtl;
+}
+
+.character-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 42px;
+  min-height: 42px;
+  padding: 3px 8px 7px;
+  border: 1px solid var(--border);
+  border-radius: calc(var(--radius) - 2px);
+  background: var(--card);
+  color: var(--fg);
+  font: 400 21px / 1.2 var(--font-nastaliq);
+  cursor: pointer;
+  transition: background 0.1s ease, border-color 0.1s ease;
+}
+
+.character-button .glyph {
+  display: block;
+}
+
+.character-button .face-mark,
+.character-button .face-mark-below {
+  font-size: 30px;
+}
+
+.character-button .face-mark {
+  transform: translateY(4px);
+}
+
+.character-button .face-mark-below {
+  transform: translateY(-20px);
+}
+
+.character-button:hover {
+  border-color: #d4d4d4;
+  background: #f5f5f5;
+}
+
+.character-button:active {
+  background: #e5e5e5;
+}
+
+.help-body {
+  padding: 0 16px 16px;
+  border-top: 1px solid var(--border);
+  color: var(--muted-fg);
+  font-size: 0.875rem;
+}
+
+.help-body p {
+  margin: 12px 0;
+}
+
+.help-group {
+  margin-top: 12px;
+}
+
+.help-group h2 {
+  margin: 0 0 8px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--fg);
+}
+
+.chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 14px;
+  align-items: center;
+}
+
+.chip-row div {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 4px;
+}
+
+kbd {
+  display: inline-block;
+  padding: 1px 6px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: #f5f5f5;
+  font: 500 0.75rem var(--font-mono);
+  color: var(--fg);
+}
+
+.nastaliq {
+  font-family: var(--font-nastaliq);
+  font-size: 1.05rem;
+  direction: rtl;
+  color: var(--fg);
+}
+
+.muted {
+  color: var(--muted);
+  font-size: 0.75rem;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 700px) {
+  .app {
+    width: 100%;
+    padding: 12px 10px 28px;
+  }
+
+  .controls {
+    width: 100%;
+  }
+
+  .editor-surface {
+    --editor-pad-block: 12px;
+    max-height: 50vh;
+  }
+
+  .editor-surface .tiptap,
+  .editor-surface .ProseMirror {
+    padding: var(--editor-pad-block) 14px;
+  }
+
+  .preview-body {
+    max-height: 62vh;
+  }
+
+  .preview-rendered {
+    padding: 16px 16px 24px;
+  }
+
+  .format-toolbar {
+    gap: 2px;
+    padding: 8px 10px;
+  }
+
+  .key {
+    min-height: 46px;
+    font-size: 18px;
+  }
+
+  .keyboard.dual-layer .key {
+    font-size: 16px;
+  }
+
+  .character-palette {
+    grid-template-columns: 1fr;
+  }
+
+  .summary-note {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn,
+  .key,
+  .layer-button,
+  .format-button,
+  .preview-mode,
+  .character-button,
+  .face-base,
+  .face-shift,
+  .face-alt,
+  .face-alt-shift {
+    transition: none;
+  }
+}

@@ -275,17 +275,45 @@ Temporary audio is deleted on discard and after a successful handoff.
 6. collapses repeated CTC tokens;
 7. removes the blank class;
 8. converts SentencePiece word markers to spaces;
-9. normalizes whitespace and duplicate ZWNJ.
+9. folds Perso-Arabic letters that belong to other languages in the aggregate
+   tokenizer onto their Kashmiri equivalents (`kashmiriCharacterFolds`);
+10. normalizes whitespace and duplicate ZWNJ.
 
 The current app uses CPU fallback. Optional providers can be listed in model
 metadata when supported.
+
+#### Character folding
+
+Because the tokenizer is shared by 22 languages, greedy decoding can emit
+Perso-Arabic letters that are not Kashmiri orthography — U+06AA swash kaf,
+U+0674 high hamza, and U+0619 small damma. None of them exist in the bundled
+Noto Nastaliq Urdu face, so leaving them in a transcript forces a system
+fallback font mid-word. That splits the shaping run and neighbouring letters
+stop joining; swash kaf is dual-joining, so an entire word comes apart. The web
+editor hides the same problem because its CSS falls back to Gulmarg Nastaliq,
+which the app does not bundle.
+
+`core/text/kashmiri_orthography.dart` folds them to the characters the on-screen
+keyboard produces (U+06A9 keheh, U+0621 hamza, U+064F damma). It is applied both
+at the end of decoding (`normalizeKashmiriText`, which also collapses whitespace)
+and as an input formatter on the review field
+(`KashmiriCharacterFoldingFormatter`), so pasting from another Perso-Arabic
+keyboard cannot reintroduce the problem. Folds are one code unit to one code
+unit, so caret and selection offsets are unaffected.
+
+`tools/model/scripts/check_font_coverage.py` fails if any codepoint reachable
+from the vocabulary is still uncovered after folding, and
+`apps/native/test/kashmiri_normalization_test.dart` pins the same rule by
+parsing the font's `cmap`.
 
 ### Review and handoff
 
 The review page allows correction, retry, and re-recording. The transcript field
 uses the bundled Noto Nastaliq Urdu face with RTL direction and a tall line
 height (`core/ui/kashmiri_text.dart`), matching the web editor's default font so
-text renders the same on both sides of the clipboard handoff.
+text renders the same on both sides of the clipboard handoff. Edits pass through
+`KashmiriCharacterFoldingFormatter` so pasted text cannot introduce a character
+the face cannot render.
 
 Done:
 

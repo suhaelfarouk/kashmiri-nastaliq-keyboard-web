@@ -2,6 +2,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shadcn_flutter/shadcn_flutter.dart';
 
+import '../../../core/text/kashmiri_orthography.dart';
 import '../../../core/ui/kashmiri_text.dart';
 import '../../handoff/data/handoff_service.dart';
 import '../bloc/transcription_bloc.dart';
@@ -75,7 +76,13 @@ class _ReviewPageState extends State<ReviewPage> {
                           .add(TranscriptionTextEdited(v)),
                       placeholder: const Text('Transcript'),
                       maxLines: null,
+                      expands: true,
+                      inputFormatters: const [
+                        KashmiriCharacterFoldingFormatter(),
+                      ],
                       style: KashmiriText.style,
+                      textAlign: TextAlign.right,
+                      textDirection: TextDirection.rtl,
                       textAlignVertical: TextAlignVertical.top,
                     ),
                   ),

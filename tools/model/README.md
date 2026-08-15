@@ -191,6 +191,27 @@ and identical decoded text. A high blank-frame percentage with empty output mean
 the features are wrong (most often missing per-feature normalization), not that
 the model failed to load.
 
+### Verify font coverage for the vocabulary
+
+`scripts/check_font_coverage.py` checks every Perso-Arabic character the
+vocabulary can emit against the Nastaliq face bundled in the Flutter app. It
+needs no virtualenv or third-party packages — it reads the font's `cmap`
+directly:
+
+```bash
+# From the repo root
+python3 tools/model/scripts/check_font_coverage.py \
+  --vocab tools/model/dist/makhzan-v1.0.0/vocab.json
+```
+
+A missing codepoint makes the app fall back to a system font mid-word, which
+splits the shaping run so surrounding letters stop joining. The script applies
+`kashmiriCharacterFolds` from
+`apps/native/lib/core/text/kashmiri_orthography.dart` before reporting, and
+exits non-zero if anything is still uncovered. Run it after
+exporting a model with a new tokenizer or after changing the bundled font, and
+add a fold (or bundle a face with wider coverage) for anything it reports.
+
 ### Current validation limitation
 
 `validate_export.py` currently checks that `model.onnx`, `vocab.json`, and

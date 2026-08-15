@@ -40,6 +40,18 @@ architecture, and `apps/native/lib/core/ui/kashmiri_text.dart` together. Bundled
 ship their license file and be registered with `LicenseRegistry`. Verify glyph
 coverage for Kashmiri-specific codepoints before switching faces.
 
+Coverage is not cosmetic: a codepoint missing from the bundled face falls back to
+a system font mid-word, which splits the shaping run so neighbouring letters stop
+joining. Before and after changing a face or a model tokenizer, run both
+guardrails and reconcile the folds in
+`apps/native/lib/core/text/kashmiri_orthography.dart`:
+
+```bash
+python3 tools/model/scripts/check_font_coverage.py \
+  --vocab tools/model/dist/makhzan-v1.0.0/vocab.json
+cd apps/native && flutter test test/kashmiri_normalization_test.dart
+```
+
 ### Flutter feature or platform support
 
 Update:

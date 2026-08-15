@@ -5,8 +5,21 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_onnxruntime/flutter_onnxruntime.dart';
 
 import '../../../core/model/model_store.dart';
+import '../../../core/text/kashmiri_orthography.dart';
 import 'mel_features.dart';
 import 'wav_pcm.dart';
+
+/// Fold letters the face cannot render, collapse whitespace, drop duplicate ZWNJ.
+///
+/// Decode-time only: collapsing whitespace and trimming would stop the user
+/// typing spaces, so the review field applies just the folds via
+/// [KashmiriCharacterFoldingFormatter].
+String normalizeKashmiriText(String text) {
+  return foldKashmiriCharacters(text)
+      .replaceAll(RegExp(r'\s+'), ' ')
+      .replaceAll('\u200c\u200c', '\u200c')
+      .trim();
+}
 
 /// Local CTC inference over a verified ONNX package.
 ///
@@ -194,14 +207,7 @@ class CtcInferenceService {
       }
       out.write(piece.replaceAll('▁', ' ').replaceAll('##', ''));
     }
-    return _normalizeKashmiri(out.toString());
-  }
-
-  String _normalizeKashmiri(String text) {
-    return text
-        .replaceAll(RegExp(r'\s+'), ' ')
-        .replaceAll('\u200c\u200c', '\u200c')
-        .trim();
+    return normalizeKashmiriText(out.toString());
   }
 
   Future<void> dispose() async {

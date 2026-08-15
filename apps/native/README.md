@@ -103,12 +103,66 @@ web editor, so text looks identical before and after the clipboard handoff.
   (SIL Open Font License 1.1, `assets/fonts/OFL.txt`, surfaced through
   `LicenseRegistry`).
 - Style and RTL wrapper live in `lib/core/ui/kashmiri_text.dart`
-  (22 px, line height 2.1, `Locale('ks')`, `TextDirection.rtl`).
+  (28 px, line height 2.05, `Locale('ks')`, `TextDirection.rtl`), matching the
+  web editor's `--editor-size` and `--editor-leading` in `apps/web/style.css`.
+  Keep both sides in step; changing one alone makes the handoff look different.
+- The bundled face is a variable font, so the weight axis is pinned to 400
+  (`fontVariations`) to match the web editor's regular weight.
+- Leading is distributed evenly (`TextLeadingDistribution.even`) so tall
+  ascenders and deep descenders are not clipped inside the review text field.
 - Nastaliq needs a tall line height; reducing it makes ascenders and descenders
   collide.
-- Verified glyph coverage for Kashmiri-specific codepoints including
-  `U+0672 ٲ`, `U+06CD ۍ`, `U+06C4 ۄ`, `U+0620 ؠ`, and the vowel marks
-  `U+065A`–`U+065F`.
+- The review field sets `textAlign: right` and `textDirection: rtl` explicitly,
+  in addition to the `Directionality` wrapper.
+- Verified glyph coverage for the Kashmiri-specific codepoints the on-screen
+  keyboard produces, including `U+0672 ٲ`, `U+06CD ۍ`, `U+06C4 ۄ`, `U+0620 ؠ`,
+  and the vowel marks `U+065A`, `U+065B`, `U+065D`–`U+065F`. The face does
+  **not** cover `U+065C`, which the keyboard and the model never emit.
+
+### Characters that break joining
+
+A codepoint missing from the bundled face falls back to a system font in the
+middle of a word. That splits the shaping run, so the letters around it stop
+joining — very visible in Nastaliq, and the reason a word can appear broken in
+the app but correct on the web (the web CSS falls back to Gulmarg Nastaliq,
+which is not bundled here).
+
+Two paths bring such characters in: the aggregate tokenizer is shared by 22
+languages, so greedy decoding can emit Perso-Arabic letters that are neither
+Kashmiri orthography nor present in the face, and a user can type or paste them
+from a system keyboard. `kashmiriCharacterFolds` in
+`lib/core/text/kashmiri_orthography.dart` folds them onto the keyboard's
+equivalents:
+
+| Model may emit | Folded to | Why |
+| --- | --- | --- |
+| `U+06AA ڪ` swash kaf | `U+06A9 ک` keheh | dual-joining, so it breaks a whole word |
+| `U+0674 ٴ` high hamza | `U+0621 ء` hamza | not in the face |
+| `U+0619 ؙ` small damma | `U+064F ُ` damma | combining mark not in the face |
+
+Folding is applied in two places:
+
+- `normalizeKashmiriText` at the end of CTC decoding, which also collapses
+  whitespace and trims;
+- `KashmiriCharacterFoldingFormatter` on the review field, so typed and pasted
+  text is folded too. It only folds — collapsing whitespace here would break the
+  space key. Folds are one code unit to one code unit, so the caret, selection,
+  and composing range survive unchanged.
+
+Guardrails, both of which fail if a new uncovered codepoint becomes reachable:
+
+```bash
+# From the repo root: checks the vocabulary against the bundled face.
+python3 tools/model/scripts/check_font_coverage.py \
+  --vocab tools/model/dist/makhzan-v1.0.0/vocab.json
+
+# From apps/native: parses the font cmap and pins the folds.
+flutter test test/kashmiri_normalization_test.dart
+```
+
+When changing the bundled font, rerun both. If the new face covers a folded
+character, drop the fold — the test asserts folds exist only for genuinely
+missing glyphs.
 
 ## Architecture
 
@@ -117,6 +171,7 @@ lib/
   app/router.dart              # go_router + model-ready guards
   core/config/               # URLs + constants
   core/ui/kashmiri_text.dart # Nastaliq style + RTL wrapper
+  core/text/                 # orthography folds + input formatter
   core/model/                # signed manifest, store, Ed25519 verify
   features/model_manager/   # resumable download / verify / atomic install
   features/recorder/        # PCM16 WAV + waveform UX

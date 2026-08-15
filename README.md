@@ -23,6 +23,8 @@ npm start
 # open http://localhost:8080
 ```
 
+Repo: [github.com/suhaelfarouk/kashmiri-nastaliq-keyboard-web](https://github.com/suhaelfarouk/kashmiri-nastaliq-keyboard-web)
+
 Other scripts:
 
 ```bash

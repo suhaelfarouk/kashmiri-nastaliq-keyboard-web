@@ -1,8 +1,35 @@
+# Generated / local
 node_modules/
 dist/
 .DS_Store
 *.local
 .vercel
+
+# Secrets (never commit)
 .env
 .env.*
 .env*
+!.env.example
+!tools/model/.env.example
+!apps/web/.env.example
+
+# Flutter (apps/native)
+apps/native/.dart_tool/
+apps/native/.flutter-plugins-dependencies
+apps/native/build/
+apps/native/**/Generated.xcconfig
+
+# Model tooling (tools/model)
+tools/model/dist/
+tools/model/out/
+tools/model/.venv/
+tools/model/NeMo/
+tools/model/**/__pycache__/
+tools/model/keys/
+*.nemo
+*.onnx
+*.tar.gz
+HF_TOKEN
+.r2*
+**/private_key*
+**/signing_key*

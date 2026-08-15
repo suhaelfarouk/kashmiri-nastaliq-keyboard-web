@@ -1,0 +1,49 @@
+name: makhzan
+description: Local Kashmiri speech-to-text companion for the Nastaliq Markdown editor.
+publish_to: "none"
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.12.2
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_bloc: ^9.1.1
+  go_router: ^17.5.0
+  shadcn_flutter: ^0.0.53
+  background_downloader: ^9.5.8
+  record: ^7.1.1
+  flutter_onnxruntime: ^1.8.3
+  cryptography: ^2.9.0
+  cryptography_flutter: ^2.3.4
+  path_provider: ^2.1.6
+  shared_preferences: ^2.5.5
+  url_launcher: ^6.3.2
+  equatable: ^2.0.7
+  uuid: ^4.5.1
+  crypto: ^3.0.6
+  archive: ^4.0.7
+  http: ^1.4.0
+  connectivity_plus: ^6.1.5
+  path: ^1.9.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+  bloc_test: ^10.0.0
+  mocktail: ^1.0.4
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/fonts/OFL.txt
+
+  fonts:
+    # Kashmiri Perso-Arabic display face, matching the web editor default.
+    # SIL Open Font License 1.1 (see assets/fonts/OFL.txt).
+    - family: Noto Nastaliq Urdu
+      fonts:
+        - asset: assets/fonts/NotoNastaliqUrdu-VariableFont_wght.ttf

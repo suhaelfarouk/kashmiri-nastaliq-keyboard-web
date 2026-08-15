@@ -1,0 +1,80 @@
+name: Build Windows
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "apps/native/**"
+      - ".github/workflows/build-windows.yml"
+  pull_request:
+    paths:
+      - "apps/native/**"
+      - ".github/workflows/build-windows.yml"
+
+concurrency:
+  group: build-windows-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  windows:
+    name: Flutter Windows release
+    runs-on: windows-latest
+    defaults:
+      run:
+        working-directory: apps/native
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Require MANIFEST_PUBLIC_KEY_B64
+        shell: bash
+        run: |
+          if [ -z "${{ secrets.MANIFEST_PUBLIC_KEY_B64 }}" ]; then
+            echo "Add repository secret MANIFEST_PUBLIC_KEY_B64"
+            echo "(contents of ~/.config/makhzan/ed25519_public.b64, no newlines)."
+            exit 1
+          fi
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Enable Windows desktop
+        run: flutter config --enable-windows-desktop
+
+      - name: Resolve dependencies
+        run: flutter pub get
+
+      - name: Analyze
+        run: flutter analyze
+
+      - name: Test
+        run: flutter test
+
+      - name: Build Windows release
+        shell: bash
+        run: |
+          flutter build windows --release \
+            --dart-define=MANIFEST_PUBLIC_KEY_B64="${{ secrets.MANIFEST_PUBLIC_KEY_B64 }}"
+
+      - name: Package Release folder
+        shell: bash
+        run: |
+          RELEASE_DIR="build/windows/x64/runner/Release"
+          test -f "$RELEASE_DIR/makhzan.exe"
+          (
+            cd "$RELEASE_DIR"
+            7z a -tzip "$GITHUB_WORKSPACE/makhzan-windows.zip" .
+          )
+
+      - name: Upload Windows artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: makhzan-windows
+          path: makhzan-windows.zip
+          if-no-files-found: error
+          retention-days: 14

@@ -1,0 +1,26 @@
+---
+description: Keep project documentation synchronized with every behavior or workflow change
+alwaysApply: true
+---
+
+# Documentation is part of the change
+
+- Read `docs/MAINTENANCE.md` before changing behavior, setup, architecture,
+  model contracts, platform support, or release operations.
+- Update the relevant README and detailed docs in the same change.
+- Keep `docs/BEGINNER_GUIDE.md`, `docs/GETTING_STARTED.md`, and
+  `docs/DEPLOYMENT.md` accurate for first-time contributors.
+- Update `docs/ARCHITECTURE.md` when data flow, trust boundaries, storage,
+  routing, model I/O, or inference changes.
+- Update `apps/web/README.md` and `apps/web/vercel.json` for web deploy changes.
+- Update `tools/model/README.md`, `tools/model/RELEASE.md`, and
+  `tools/model/.env.example` for export, signing, R2, env names, release, or
+  rollback changes.
+- Update `apps/native/README.md`, platform notes, and
+  `apps/native/docs/PRIVACY.md` for Flutter, native, or privacy-promise
+  changes.
+- Document observed behavior and explicit limitations; do not claim model
+  accuracy without representative fixture results.
+- Never include tokens, private keys, R2 credentials, transcripts, or audio in
+  documentation or examples.
+- Verify commands, paths, local links, tests, and builds before handing off.

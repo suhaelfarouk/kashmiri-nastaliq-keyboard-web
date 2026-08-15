@@ -1,148 +1,85 @@
-# Kashmiri Nastaliq Keyboard
+# Makhzan (monorepo)
 
-Unicode Kashmiri (Perso-Arabic / Nastaliq) typing for the browser, with a WYSIWYG Markdown editor powered by Tiptap. Phonetic and direct QWERTY input, four keyboard layers, curated Arabic-script fonts, and local draft autosave.
+Makhzan ships through three delivery units in one repository. Each has its own
+toolchain and deploy target.
 
-## Features
+| Unit | Path | Deploy to |
+|------|------|-----------|
+| Web editor | [`apps/web/`](apps/web/) | **Vercel** (`dist/`) |
+| Makhzan | [`apps/native/`](apps/native/) | Native builds (Android / iOS / macOS / Windows) |
+| Model pipeline | [`tools/model/`](tools/model/) | **Cloudflare R2** (signed ONNX packages) |
 
-- **WYSIWYG Markdown editor** (Tiptap): headings, bold/italic/strike, lists, links, quotes, code
-- **Smart Kashmiri** phonetic mode: Latin sequences such as `sh` → ش, `chh` → چھ, `aa` → آ
-- **Direct QWERTY** mode: one physical key → one Kashmiri character
-- **Four keyboard layers** — Base, Shift, Alt, and Alt + Shift
-- **Show both layers** toggle: base + Shift characters side by side on each key
-- **Extended character palette** for vowels, combining marks, aspirates, loan letters
-- **Curated fonts**: Noto Nastaliq Urdu, Gulmarg Nastaliq (self-hosted), Scheherazade New — plus a font size selector
-- **One-line editor** (drag its bottom edge to grow) plus a **Preview** panel that
-  shows the whole document, rendered or as raw Markdown
-- **Minimal view** hides settings, formatting, file actions, layer selectors,
-  and help menus while keeping Preview, the editor, and keyboard available
-- **Open / Download `.md`**, copy Markdown, and debounced browser autosave
+Shared docs live in [`docs/`](docs/). Start with
+[`docs/GETTING_STARTED.md`](docs/GETTING_STARTED.md) or
+[`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md).
 
-## Quick start
+Protected live editor (Vercel login required):
+[https://makhzan-suhael-farouk-s-projects.vercel.app](https://makhzan-suhael-farouk-s-projects.vercel.app)
+
+## Quick starts
+
+### Web (Vercel)
 
 ```bash
+cd apps/web
 npm install
-npm start
-# open http://localhost:8080
-```
-
-Repo: [github.com/suhaelfarouk/kashmiri-nastaliq-keyboard-web](https://github.com/suhaelfarouk/kashmiri-nastaliq-keyboard-web)
-
-Other scripts:
-
-```bash
-npm run build    # production bundle → dist/
-npm run preview  # preview the production build
+npm start          # http://localhost:8080
 npm test
+npm run build     # → apps/web/dist
 ```
 
-## Deploy to Vercel
+Vercel project **Root Directory** must be `apps/web`. See
+[`apps/web/README.md`](apps/web/README.md).
+
+### Native app
 
 ```bash
-npx vercel        # preview
-npx vercel --prod # production
+cd apps/native
+flutter pub get
+flutter run -d macos \
+  --dart-define=MANIFEST_PUBLIC_KEY_B64="$(cat ~/.config/makhzan/ed25519_public.b64 | tr -d '\n')"
 ```
 
-Or import the Git repo in the [Vercel dashboard](https://vercel.com/new). Framework Preset: **Vite**. Build command: `npm run build`. Output directory: `dist`.
+Not deployed to Vercel. See [`apps/native/README.md`](apps/native/README.md).
 
-## Project layout
+### Model export / publish (R2)
 
-```
-index.html              # Shell (editor mount + keyboard host)
-style.css               # Compact neutral UI + ProseMirror styles
-vite.config.js          # Vite build
-package.json
-public/
-  fonts/
-    GulmargNastaliq.woff2  # Self-hosted Kashmiri Nastaliq face
-src/
-  main.js               # Entry point
-  app.js                # Wires controllers together
-  data/
-    keyboard.js         # Canonical key rows, four layers per key
-    characters.js       # Extended Kashmiri Unicode inventory
-    font-presets.js     # Document-level font presets
-    marks.js            # Combining-mark placement helpers
-    transliteration.js  # Phonetic rules, marks, help examples
-  core/
-    transliterator.js  # Pure buffered longest-match engine
-  ui/
-    editor.js           # Tiptap adapter (insert / Markdown / status)
-    format-toolbar.js  # Formatting toolbar
-    autosave.js         # localStorage drafts
-    file-io.js          # Open / download .md
-    character-palette.js
-    keyboard.js
-tests/
-  characters.test.js
-  editor.test.js
-  file-io.test.js
-  font-presets.test.js
-  keyboard.test.js
-  transliterator.test.js
+```bash
+cd tools/model
+source .venv/bin/activate   # recreate venv after a path move if needed
+set -a && source .env && set +a
+python scripts/publish_r2.py --package dist/makhzan-v1.0.0 --version 1.0.0
 ```
 
-## Controls
+Operator-only. See [`tools/model/README.md`](tools/model/README.md) and
+[`tools/model/RELEASE.md`](tools/model/RELEASE.md).
 
-| Control | Effect |
-|---|---|
-| Formatting toolbar | Toggle Markdown-friendly rich text styles |
-| Font | Document-level face (not stored inside `.md`) |
-| Size | Editor body size, 18–48 px (not stored inside `.md`) |
-| Preview | Show the full document: Rendered or raw Markdown |
-| Open / Download | Load or save a Markdown file |
-| Copy Markdown | Clipboard export of `getMarkdown()` |
-| Keyboard mapping | Intercept physical keys into Kashmiri |
-| Show both layers | Draw two faces together; Shift still selects which one inserts |
-| Mode | Smart Kashmiri (phonetic buffer) or Direct QWERTY |
-| Normal / Shift / Alt / Alt + Shift | Sticky layer selector for the on-screen keyboard |
+## Documentation
 
-## Layers
+- [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md) — what goes where
+- [`docs/GETTING_STARTED.md`](docs/GETTING_STARTED.md) — audience forks
+- [`docs/BEGINNER_GUIDE.md`](docs/BEGINNER_GUIDE.md) — full walkthrough
+- [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) — data flow and contracts
+- [`docs/MAINTENANCE.md`](docs/MAINTENANCE.md) — keep docs in sync
 
-Each key in `src/data/keyboard.js` carries up to four characters:
+## Repository layout
 
-| Layer | Contents |
-|---|---|
-| Base | Everyday letters, Kashmiri digits, common punctuation |
-| Shift | Alternate letters and the most frequent marks |
-| Alt | Aspirated digraphs, vowel sequences, remaining combining marks |
-| Alt + Shift | Loan-word consonants, precomposed vowels, punctuation, ZWNJ / ZWJ |
+```text
+apps/
+  web/                 Vite Kashmiri Nastaliq Markdown editor → Vercel
+  native/              Flutter on-device STT app
+tools/
+  model/               NeMo → ONNX export, sign, R2 publish
+docs/                  Shared architecture and runbooks
+README.md              This file
+```
 
-## Orthography notes
+## Flow
 
-Phonetic mode is an **input method**, not a full linguistic romanization. Longest-match rules resolve digraphs before single letters. Combining marks:
+```text
+tools/model → signed package on R2
+  → apps/native downloads + verifies → local CTC transcription
+  → clipboard → apps/web /?from=makhzan → Paste from Makhzan
+```
 
-- `~` → ٟ (U+065F)
-- `^` → ٖ (U+0656)
-- `:` → ٗ (U+0657)
-
-Short `a`, `i`, and `u` are position-aware: at the beginning of a word they
-receive the required alef carrier (`اَ`, `اِ`, `اُ`); after a consonant they are
-inserted as bare vowel marks (`َ`, `ِ`, `ُ`). Likewise, `a~` produces `اٟ`
-word-initially and the bare `ٟ` mark medially.
-
-Final short `i` inserts kasra (`ِ`); use `ii` / `ee` for ی.
-
-The page and editor use `lang="ks"` with Noto Nastaliq Urdu (or another preset) so Kashmiri-specific glyph substitutions can be selected by the font. Combining marks are shown bare on keycaps and palette buttons.
-
-Font and size are editor metadata (autosave / UI), not Markdown, so exported `.md` files stay portable across tools.
-
-## Fonts
-
-| Preset | Style | Delivery |
-|---|---|---|
-| Noto Nastaliq Urdu | Nastaliq | Google Fonts (v3.002+ covers Kashmiri when `lang="ks"`) |
-| Gulmarg Nastaliq | Nastaliq | Self-hosted `public/fonts/GulmargNastaliq.woff2` (~141 KB) |
-| Scheherazade New | Naskh | Google Fonts |
-
-Gulmarg is not on Google Fonts, so it is bundled as WOFF2 and declared with an
-`@font-face` rule that prefers a locally installed copy via `local("Gulmarg Nastaleeq")`.
-Note that Gulmarg lacks glyphs for a few Kashmiri characters (notably Kashmiri
-yeh and waw with ring) — Noto Nastaliq Urdu remains the most complete option and
-is the default. Verify the Gulmarg license before redistributing the bundled file.
-
-## References
-
-- Unicode Arabic script / Kashmiri vowel marks
-- W3C Perso-Arabic Kashmiri layout requirements
-- Richard Ishida: Kashmiri Nastaliq orthography notes
-- [Tiptap Markdown](https://tiptap.dev/docs/editor/markdown)
+Audio stays on device. The editor URL never contains the transcript.

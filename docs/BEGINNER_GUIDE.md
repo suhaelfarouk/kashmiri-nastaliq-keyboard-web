@@ -117,7 +117,7 @@ npm run preview
 The production site is:
 
 ```text
-https://makhzan-suhael-farouk-s-projects.vercel.app
+https://makhzan-project.vercel.app
 ```
 
 ### How the web application starts

@@ -1,7 +1,7 @@
 # Makhzan (Flutter companion)
 
 Local, on-device Kashmiri speech-to-text companion for the
-[Makhzan](https://makhzan-suhael-farouk-s-projects.vercel.app)
+[Makhzan](https://makhzan-project.vercel.app)
 web editor.
 
 **Package ID:** `com.makhzan`  

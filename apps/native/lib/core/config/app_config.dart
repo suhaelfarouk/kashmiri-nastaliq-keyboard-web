@@ -9,7 +9,7 @@ class AppConfig {
   static const packageId = 'com.makhzan';
   static const editorUrl = String.fromEnvironment(
     'EDITOR_URL',
-    defaultValue: 'https://makhzan-suhael-farouk-s-projects.vercel.app',
+    defaultValue: 'https://makhzan-project.vercel.app',
   );
   static const editorHandoffUrl = '$editorUrl/?from=makhzan';
 

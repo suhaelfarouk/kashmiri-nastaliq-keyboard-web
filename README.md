@@ -13,8 +13,8 @@ Shared docs live in [`docs/`](docs/). Start with
 [`docs/GETTING_STARTED.md`](docs/GETTING_STARTED.md) or
 [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md).
 
-Protected live editor (Vercel login required):
-[https://makhzan-suhael-farouk-s-projects.vercel.app](https://makhzan-suhael-farouk-s-projects.vercel.app)
+Live editor:
+[https://makhzan-project.vercel.app](https://makhzan-project.vercel.app)
 
 ## Quick starts
 

@@ -62,12 +62,28 @@ class RecorderService {
   Future<void> cancel(String? path) async {
     await _ampSub?.cancel();
     _ampSub = null;
-    if (await _recorder.isRecording()) {
-      await _recorder.stop();
+    try {
+      if (await _recorder.isRecording() || await _recorder.isPaused()) {
+        // Platform cancel drops the in-progress file; do not stop()+delete.
+        await _recorder.cancel();
+      }
+    } catch (_) {
+      // Still attempt path cleanup below.
     }
-    if (path != null) {
+    await _deleteQuietly(path);
+  }
+
+  Future<void> _deleteQuietly(String? path) async {
+    if (path == null || path.isEmpty) return;
+    try {
       final file = File(path);
-      if (await file.exists()) await file.delete();
+      if (await file.exists()) {
+        await file.delete();
+      }
+    } on PathNotFoundException {
+      // Already gone after platform cancel or a cache race on iOS.
+    } on FileSystemException {
+      // Ignore leftover cleanup failures; discard must not crash.
     }
   }
 

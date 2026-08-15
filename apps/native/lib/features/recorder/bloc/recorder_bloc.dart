@@ -80,7 +80,11 @@ class RecorderBloc extends Bloc<RecorderEvent, RecorderState> {
 
   Future<void> _onCancel(RecorderCancelled event, Emitter<RecorderState> emit) async {
     _timer?.cancel();
-    await _service.cancel(state.path);
+    try {
+      await _service.cancel(state.path);
+    } catch (_) {
+      // Cleanup races must not leave the recorder stuck.
+    }
     emit(const RecorderState());
   }
 

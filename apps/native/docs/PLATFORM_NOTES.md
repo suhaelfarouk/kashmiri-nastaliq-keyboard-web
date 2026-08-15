@@ -62,7 +62,9 @@ hash failure on real devices before release.
 ## Build host requirements
 
 - Android builds: macOS, Windows, or Linux with Android SDK
-- iOS builds: macOS with Xcode and Apple signing
+- iOS builds: macOS with Xcode and Apple signing; **minimum iOS 16.0**
+  (required by `flutter_onnxruntime`; `background_downloader` needs 14.0+;
+  set in `ios/Runner.xcodeproj/project.pbxproj`)
 - macOS builds: macOS with Xcode; **minimum deployment target 14.0**
   (required by `flutter_onnxruntime`; set in
   `macos/Runner.xcodeproj/project.pbxproj`)

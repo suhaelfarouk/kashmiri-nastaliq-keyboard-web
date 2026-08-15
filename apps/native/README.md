@@ -21,6 +21,7 @@ web editor.
   on the author machine — this repo does **not** ship an `.fvmrc`; any recent
   stable Flutter that satisfies `pubspec.yaml` should work)
 - Xcode (iOS/macOS), Android SDK, and Windows build tools as needed
+- iOS runs require **iOS 16+** (`flutter_onnxruntime` deployment target)
 - macOS runs require **macOS 14+** (`flutter_onnxruntime` deployment target)
 - A published model package + signed manifest (see [`../../tools/model/README.md`](../../tools/model/README.md))
 - The Ed25519 public key matching the private key used to sign the manifest

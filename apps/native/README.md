@@ -200,6 +200,17 @@ Workflows:
 The Android APKs currently use Flutter's debug signing key and are for
 sideload testing only, not Play Store publication.
 
+### GitHub Releases
+
+Pushing a version tag such as `v1.0.0` runs
+[`publish-native-release.yml`](../../.github/workflows/publish-native-release.yml).
+After Windows and Android tests/builds pass, it creates a permanent GitHub
+prerelease containing the Windows zip plus universal and per-ABI APKs.
+
+Releases are marked as prereleases while Android uses debug signing. Do not
+promote one to a stable store release until Android release signing and
+target-device checks are complete.
+
 Platform store signing/provisioning is separate from Ed25519 model signing.
 
 ## Troubleshooting

@@ -71,6 +71,9 @@ hash failure on real devices before release.
   (requires secret `MANIFEST_PUBLIC_KEY_B64`; artifact `makhzan-windows`)
 - CI Android APKs: `.github/workflows/build-android.yml` on `ubuntu-latest`
   (artifact `makhzan-android-apks`; debug-signed for sideload testing)
+- Permanent native prereleases:
+  `.github/workflows/publish-native-release.yml` on `v*` tags (Windows zip and
+  Android APK assets; requires `MANIFEST_PUBLIC_KEY_B64`)
 
 ## Current integration-test status
 

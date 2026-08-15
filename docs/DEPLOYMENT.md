@@ -72,6 +72,17 @@ Both require repository secret `MANIFEST_PUBLIC_KEY_B64`. The Android APKs use
 debug signing for sideload testing; configure release signing before Play Store
 publication.
 
+For permanent downloads under GitHub **Releases**, push a version tag:
+
+```bash
+git tag v1.0.0
+git push origin v1.0.0
+```
+
+`.github/workflows/publish-native-release.yml` tests and builds Windows and
+Android, then publishes their assets as a prerelease. Use a new tag for every
+release; immutable version tags must not be moved or reused.
+
 Optional overrides:
 
 - `MANIFEST_URL` — non-default R2 latest manifest

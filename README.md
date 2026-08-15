@@ -41,6 +41,8 @@ flutter run -d macos \
 ```
 
 Not deployed to Vercel. See [`apps/native/README.md`](apps/native/README.md).
+Versioned Windows and Android test builds are published under
+[GitHub Releases](https://github.com/suhaelfarouk/makhzan/releases).
 
 ### Model export / publish (R2)
 

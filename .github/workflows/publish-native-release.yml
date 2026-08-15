@@ -1,0 +1,180 @@
+name: Publish Native Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  windows:
+    name: Build Windows release
+    runs-on: windows-latest
+    defaults:
+      run:
+        working-directory: apps/native
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Require MANIFEST_PUBLIC_KEY_B64
+        shell: bash
+        run: |
+          if [ -z "${{ secrets.MANIFEST_PUBLIC_KEY_B64 }}" ]; then
+            echo "Add repository secret MANIFEST_PUBLIC_KEY_B64"
+            exit 1
+          fi
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Resolve dependencies
+        run: flutter pub get
+
+      - name: Analyze
+        run: flutter analyze
+
+      - name: Test
+        run: flutter test
+
+      - name: Build Windows
+        shell: bash
+        run: |
+          flutter config --enable-windows-desktop
+          flutter build windows --release \
+            --dart-define=MANIFEST_PUBLIC_KEY_B64="${{ secrets.MANIFEST_PUBLIC_KEY_B64 }}"
+
+      - name: Package Windows
+        shell: bash
+        run: |
+          RELEASE_DIR="build/windows/x64/runner/Release"
+          test -f "$RELEASE_DIR/makhzan.exe"
+          (
+            cd "$RELEASE_DIR"
+            7z a -tzip "$GITHUB_WORKSPACE/makhzan-windows-${GITHUB_REF_NAME}.zip" .
+          )
+
+      - name: Upload Windows release asset
+        uses: actions/upload-artifact@v7
+        with:
+          name: release-windows
+          path: makhzan-windows-${{ github.ref_name }}.zip
+          if-no-files-found: error
+
+  android:
+    name: Build Android release APKs
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/native
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Require MANIFEST_PUBLIC_KEY_B64
+        shell: bash
+        run: |
+          if [ -z "${{ secrets.MANIFEST_PUBLIC_KEY_B64 }}" ]; then
+            echo "Add repository secret MANIFEST_PUBLIC_KEY_B64"
+            exit 1
+          fi
+
+      - name: Set up Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Resolve dependencies
+        run: flutter pub get
+
+      - name: Analyze
+        run: flutter analyze
+
+      - name: Test
+        run: flutter test
+
+      - name: Build Android APKs
+        shell: bash
+        run: |
+          flutter build apk --release \
+            --dart-define=MANIFEST_PUBLIC_KEY_B64="${{ secrets.MANIFEST_PUBLIC_KEY_B64 }}"
+          flutter build apk --release --split-per-abi \
+            --dart-define=MANIFEST_PUBLIC_KEY_B64="${{ secrets.MANIFEST_PUBLIC_KEY_B64 }}"
+
+      - name: Name Android release assets
+        shell: bash
+        run: |
+          mkdir -p "$GITHUB_WORKSPACE/release-android"
+          OUTPUT="build/app/outputs/flutter-apk"
+          cp "$OUTPUT/app-release.apk" \
+            "$GITHUB_WORKSPACE/release-android/makhzan-android-universal-${GITHUB_REF_NAME}.apk"
+          for apk in "$OUTPUT"/app-*-release.apk; do
+            abi="$(basename "$apk" | sed -E 's/^app-(.*)-release\.apk$/\1/')"
+            cp "$apk" \
+              "$GITHUB_WORKSPACE/release-android/makhzan-android-${abi}-${GITHUB_REF_NAME}.apk"
+          done
+
+      - name: Upload Android release assets
+        uses: actions/upload-artifact@v7
+        with:
+          name: release-android
+          path: release-android/*.apk
+          if-no-files-found: error
+
+  release:
+    name: Publish GitHub prerelease
+    needs: [windows, android]
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download Windows asset
+        uses: actions/download-artifact@v8
+        with:
+          name: release-windows
+          path: release-assets
+
+      - name: Download Android assets
+        uses: actions/download-artifact@v8
+        with:
+          name: release-android
+          path: release-assets
+
+      - name: Verify release assets
+        shell: bash
+        run: |
+          compgen -G 'release-assets/*.zip' >/dev/null
+          compgen -G 'release-assets/*.apk' >/dev/null
+          ls -lh release-assets
+
+      - name: Publish prerelease
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          gh release create "$GITHUB_REF_NAME" release-assets/* \
+            --verify-tag \
+            --prerelease \
+            --title "Makhzan ${GITHUB_REF_NAME#v}" \
+            --notes-file - <<'EOF'
+          Native test builds of Makhzan.
+
+          - Windows: unzip the archive and keep all DLL/data files next to `makhzan.exe`.
+          - Android: use the universal APK for simplest sideloading, or the APK matching your device ABI.
+          - The Android APKs are debug-signed for testing and are not Play Store release artifacts.
+
+          The speech model downloads on first run and requires substantial free disk space.
+          EOF

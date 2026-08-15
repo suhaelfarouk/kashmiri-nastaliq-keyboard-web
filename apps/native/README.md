@@ -180,18 +180,25 @@ Build Windows on Windows:
 flutter build windows --dart-define=MANIFEST_PUBLIC_KEY_B64="<public key>"
 ```
 
-### CI Windows artifact
+### CI build artifacts
 
-GitHub Actions builds a Windows release zip on `main` when `apps/native/`
-changes, and on demand via **Actions → Build Windows → Run workflow**.
+GitHub Actions builds Windows and Android test artifacts on `main` when
+`apps/native/` changes, and on demand:
 
 1. Add repository secret `MANIFEST_PUBLIC_KEY_B64` (contents of
    `~/.config/makhzan/ed25519_public.b64`, no newlines).
-2. After the run succeeds, download the **makhzan-windows** artifact.
-3. Unzip and run `makhzan.exe` on a Windows machine (keep the DLL/data folders
-   next to the exe).
+2. **Actions → Build Windows → Run workflow** produces **makhzan-windows**.
+   Unzip and run `makhzan.exe`, keeping its DLL/data folders beside it.
+3. **Actions → Build Android APKs → Run workflow** produces
+   **makhzan-android-apks**, containing a universal APK and smaller per-ABI
+   APKs. Use `app-release.apk` for the simplest sideload test.
 
-Workflow: [`.github/workflows/build-windows.yml`](../../.github/workflows/build-windows.yml).
+Workflows:
+[Windows](../../.github/workflows/build-windows.yml) and
+[Android](../../.github/workflows/build-android.yml).
+
+The Android APKs currently use Flutter's debug signing key and are for
+sideload testing only, not Play Store publication.
 
 Platform store signing/provisioning is separate from Ed25519 model signing.
 

@@ -69,6 +69,8 @@ hash failure on real devices before release.
 - Windows builds: Windows with Visual Studio desktop C++ tools
 - CI Windows zip: `.github/workflows/build-windows.yml` on `windows-latest`
   (requires secret `MANIFEST_PUBLIC_KEY_B64`; artifact `makhzan-windows`)
+- CI Android APKs: `.github/workflows/build-android.yml` on `ubuntu-latest`
+  (artifact `makhzan-android-apks`; debug-signed for sideload testing)
 
 ## Current integration-test status
 

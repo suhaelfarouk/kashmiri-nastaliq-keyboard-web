@@ -63,9 +63,14 @@ flutter build macos    --dart-define=MANIFEST_PUBLIC_KEY_B64="$PUBLIC_KEY"
 # flutter build windows --dart-define=MANIFEST_PUBLIC_KEY_B64="$PUBLIC_KEY"
 ```
 
-Or download a CI-built Windows zip from GitHub Actions (**Build Windows**
-workflow → artifact `makhzan-windows`). Requires repository secret
-`MANIFEST_PUBLIC_KEY_B64`.
+GitHub Actions can produce test artifacts:
+
+- **Build Windows** → `makhzan-windows`
+- **Build Android APKs** → `makhzan-android-apks`
+
+Both require repository secret `MANIFEST_PUBLIC_KEY_B64`. The Android APKs use
+debug signing for sideload testing; configure release signing before Play Store
+publication.
 
 Optional overrides:
 

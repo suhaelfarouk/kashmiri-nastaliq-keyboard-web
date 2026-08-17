@@ -120,6 +120,12 @@ The production site is:
 https://makhzan-project.vercel.app
 ```
 
+Use the **Font** menu to change document typography. Faiz Lahori Nastaleeq is
+marked **installed locally** because it is proprietary: the site uses it only
+when a licensed copy is already installed on that device. Otherwise the browser
+falls back to Gulmarg Nastaliq and Noto Nastaliq Urdu. Markdown exports do not
+embed the selected font.
+
 ### How the web application starts
 
 1. `src/main.js` calls `initApp`.

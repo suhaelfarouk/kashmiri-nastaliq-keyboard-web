@@ -11,7 +11,8 @@ Markdown editor powered by Tiptap.
 - WYSIWYG Markdown editor (Tiptap)
 - Smart Kashmiri phonetic mode and Direct QWERTY
 - Four keyboard layers; show-both-layers toggle
-- Fonts: Noto Nastaliq Urdu, Gulmarg Nastaliq, Scheherazade New
+- Fonts: Noto Nastaliq Urdu, Gulmarg Nastaliq, Scheherazade New, plus
+  local-installed Faiz Lahori Nastaleeq
 - Preview panel, minimal view, Open / Download `.md`, local draft autosave
 - Makhzan handoff: `/?from=makhzan` → **Paste from Makhzan** (clipboard; no auth)
 
@@ -46,6 +47,21 @@ npx vercel --prod
 - Drafts in `localStorage` under `makhzan-v1`
 - No account or server-side document store
 - Makhzan paste requires HTTPS (or localhost) and an explicit click
+
+## Faiz Lahori Nastaleeq
+
+The **Faiz Lahori Nastaleeq (installed locally)** preset uses a licensed copy
+already installed on the visitor's device. Makhzan does not download or
+redistribute this proprietary font. The preset checks these local family names:
+
+- `Faiz Lahori Nastaleeq`
+- `FaizLahoriNastaleeq`
+- `Faiz Lahori Nastaliq`
+
+If none is installed, the browser falls back to Gulmarg Nastaliq and then Noto
+Nastaliq Urdu. Consequently, selecting the preset does not guarantee that
+another device will display Faiz; exported Markdown contains text, not font
+files or font preferences.
 
 ## Layout
 

@@ -102,6 +102,12 @@ application:
 The document is Markdown. Font face and size are display preferences and are
 not embedded into exported Markdown.
 
+Hosted and self-hosted choices are listed in `src/data/font-presets.js`. Faiz
+Lahori Nastaleeq is different: it is proprietary, so its preset resolves only a
+licensed font already installed on the visitor's device. The CSS `@font-face`
+contains `local(...)` sources but no downloadable URL. If the family is absent,
+the same preset falls back to Gulmarg Nastaliq and Noto Nastaliq Urdu.
+
 ### Input
 
 `src/data/keyboard.js` is the canonical four-layer key map.

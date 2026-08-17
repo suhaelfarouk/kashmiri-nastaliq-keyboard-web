@@ -6,6 +6,9 @@
  *
  * Gulmarg Nastaliq is a Kashmiri-specific Nastaliq face that Google Fonts does
  * not host, so it is self-hosted from public/fonts and declared in style.css.
+ * Faiz Lahori Nastaleeq is proprietary and must not be redistributed here. Its
+ * preset uses a locally installed, licensed copy and falls back to the bundled
+ * and Google-hosted Nastaliq faces.
  */
 
 export const FONT_PRESETS = [
@@ -23,6 +26,14 @@ export const FONT_PRESETS = [
     cssFamily: '"Gulmarg Nastaliq", "Noto Nastaliq Urdu", serif',
     selfHosted: true,
     lineHeight: 1.95,
+  },
+  {
+    id: "faiz-lahori",
+    label: "Faiz Lahori Nastaleeq",
+    cssFamily:
+      '"Faiz Lahori Nastaleeq Local", "Gulmarg Nastaliq", "Noto Nastaliq Urdu", serif',
+    localOnly: true,
+    lineHeight: 2,
   },
   {
     id: "scheherazade",

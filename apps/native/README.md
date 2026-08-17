@@ -98,6 +98,9 @@ stops at **120 seconds** (`AppConfig.maxRecordingSeconds`).
 
 The transcript is shown in **Noto Nastaliq Urdu**, the same default face as the
 web editor, so text looks identical before and after the clipboard handoff.
+The web editor also offers optional document faces, including a local-installed
+Faiz Lahori Nastaleeq preset; those preferences are not part of clipboard text,
+and the native review field intentionally remains on the shared Noto default.
 
 - Font bundled at `assets/fonts/NotoNastaliqUrdu-VariableFont_wght.ttf`
   (SIL Open Font License 1.1, `assets/fonts/OFL.txt`, surfaced through

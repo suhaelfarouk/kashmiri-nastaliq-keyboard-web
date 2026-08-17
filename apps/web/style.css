@@ -9,6 +9,19 @@
   font-display: swap;
 }
 
+/*
+ * Proprietary font: use only a copy the visitor has legally installed.
+ * No Faiz/Manzar font file is downloaded or redistributed by Makhzan.
+ */
+@font-face {
+  font-family: "Faiz Lahori Nastaleeq Local";
+  src: local("Faiz Lahori Nastaleeq"),
+       local("FaizLahoriNastaleeq"),
+       local("Faiz Lahori Nastaliq");
+  font-weight: 400;
+  font-display: swap;
+}
+
 :root {
   --bg: #fafafa;
   --fg: #0a0a0a;

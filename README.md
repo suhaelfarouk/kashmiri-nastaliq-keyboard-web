@@ -16,6 +16,11 @@ Shared docs live in [`docs/`](docs/). Start with
 Live editor:
 [https://makhzan-project.vercel.app](https://makhzan-project.vercel.app)
 
+The web editor includes hosted Nastaliq choices and an optional
+**Faiz Lahori Nastaleeq (installed locally)** preset. Faiz is proprietary and is
+not redistributed by this repository; that choice requires a licensed copy
+installed on the visitor's device.
+
 ## Quick starts
 
 ### Web (Vercel)

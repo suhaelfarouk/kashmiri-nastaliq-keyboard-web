@@ -142,7 +142,9 @@ export function initApp(root = document) {
         ...FONT_PRESETS.map((preset) => {
           const option = document.createElement("option");
           option.value = preset.id;
-          option.textContent = preset.label;
+          option.textContent = preset.localOnly
+            ? `${preset.label} (installed locally)`
+            : preset.label;
           return option;
         })
       );

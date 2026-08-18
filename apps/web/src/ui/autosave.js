@@ -1,20 +1,36 @@
 /**
- * Versioned localStorage autosave for Markdown + font metadata.
+ * Versioned localStorage autosave for HTML + font metadata.
+ *
+ * Version 1 stored Markdown. Version 2 stores HTML (the WYSIWYG document).
+ * v1 drafts are migrated as escaped paragraphs so typed Kashmiri is not lost,
+ * though Markdown markers become literal text.
  */
 
 export const AUTOSAVE_KEY = "makhzan-v1";
-export const AUTOSAVE_VERSION = 1;
+export const AUTOSAVE_VERSION = 2;
+
+function escapeTextAsHtml(text) {
+  const escaped = String(text ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+  if (!escaped.trim()) return "";
+  return escaped
+    .split(/\n{2,}/)
+    .map((block) => `<p>${block.replace(/\n/g, "<br>")}</p>`)
+    .join("");
+}
 
 export function createAutosavePayload({
-  markdown = "",
+  html = "",
   fontPresetId,
   fontSize,
-  fileName = "document.md",
+  fileName = "document.docx",
   updatedAt = Date.now(),
 } = {}) {
   return {
     version: AUTOSAVE_VERSION,
-    markdown,
+    html,
     fontPresetId,
     fontSize,
     fileName,
@@ -31,12 +47,23 @@ export function parseAutosave(raw) {
   try {
     const data = typeof raw === "string" ? JSON.parse(raw) : raw;
     if (!data || typeof data !== "object") return null;
+    if (data.version === 1) {
+      return createAutosavePayload({
+        html: escapeTextAsHtml(typeof data.markdown === "string" ? data.markdown : ""),
+        fontPresetId: data.fontPresetId,
+        fontSize: typeof data.fontSize === "number" ? data.fontSize : undefined,
+        fileName: typeof data.fileName === "string"
+          ? data.fileName.replace(/\.md$/i, ".docx")
+          : "document.docx",
+        updatedAt: typeof data.updatedAt === "number" ? data.updatedAt : Date.now(),
+      });
+    }
     if (data.version !== AUTOSAVE_VERSION) return null;
     return createAutosavePayload({
-      markdown: typeof data.markdown === "string" ? data.markdown : "",
+      html: typeof data.html === "string" ? data.html : "",
       fontPresetId: data.fontPresetId,
       fontSize: typeof data.fontSize === "number" ? data.fontSize : undefined,
-      fileName: typeof data.fileName === "string" ? data.fileName : "document.md",
+      fileName: typeof data.fileName === "string" ? data.fileName : "document.docx",
       updatedAt: typeof data.updatedAt === "number" ? data.updatedAt : Date.now(),
     });
   } catch {

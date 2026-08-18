@@ -1,60 +1,33 @@
 /**
- * Full-document preview for the compact single-line editor.
+ * Read-only, distraction-free view of the document.
  *
- * The editor itself only claims one line of space, so this panel is where the
- * whole document can be read — either rendered or as raw Markdown.
+ * The editor is already a full WYSIWYG surface, so this panel renders the
+ * exact same content without the toolbars and keyboard \u2014 useful for a clean
+ * read before sharing or printing. There is no separate "raw" view: what you
+ * see here (and when printing) always matches what you see in the editor.
  */
-
-const MODES = { RENDERED: "rendered", MARKDOWN: "markdown" };
-
-export function createPreview({
-  card,
-  body,
-  toggleButton,
-  modesEl,
-  countEl,
-  editor,
-}) {
+export function createPreview({ card, body, toggleButton, countEl, editor }) {
   let open = false;
-  let mode = MODES.RENDERED;
 
   function renderCount() {
     if (!countEl) return;
     const characters = [...editor.text].length;
     const words = editor.text.split(/\s+/).filter(Boolean).length;
-    countEl.textContent = `${words} words · ${characters} characters`;
+    countEl.textContent = `${words} words \u00b7 ${characters} characters`;
   }
 
   function render() {
     if (!open || !body) return;
 
-    if (mode === MODES.MARKDOWN) {
-      const pre = document.createElement("pre");
-      pre.className = "preview-markdown";
-      pre.dir = "ltr";
-      pre.textContent = editor.getMarkdown();
-      body.replaceChildren(pre);
-    } else {
-      const article = document.createElement("div");
-      article.className = "preview-rendered tiptap";
-      article.lang = "ks";
-      article.dir = "rtl";
-      // Source is the editor's own schema-validated output, not user HTML.
-      article.innerHTML = editor.getHTML();
-      body.replaceChildren(article);
-    }
+    const article = document.createElement("div");
+    article.className = "preview-rendered tiptap";
+    article.lang = "ks";
+    article.dir = "rtl";
+    // Source is the editor's own schema-validated output, not user HTML.
+    article.innerHTML = editor.getHTML();
+    body.replaceChildren(article);
 
     renderCount();
-  }
-
-  function setMode(next) {
-    mode = next === MODES.MARKDOWN ? MODES.MARKDOWN : MODES.RENDERED;
-    modesEl?.querySelectorAll("[data-preview]").forEach((button) => {
-      const active = button.dataset.preview === mode;
-      button.classList.toggle("active", active);
-      button.setAttribute("aria-pressed", String(active));
-    });
-    render();
   }
 
   function setOpen(next) {
@@ -68,11 +41,6 @@ export function createPreview({
 
   function init() {
     toggleButton?.addEventListener("click", () => setOpen(!open));
-    modesEl?.addEventListener("click", (event) => {
-      const button = event.target.closest("button[data-preview]");
-      if (!button) return;
-      setMode(button.dataset.preview);
-    });
     setOpen(false);
   }
 
@@ -82,9 +50,6 @@ export function createPreview({
     setOpen,
     get isOpen() {
       return open;
-    },
-    get mode() {
-      return mode;
     },
   };
 }

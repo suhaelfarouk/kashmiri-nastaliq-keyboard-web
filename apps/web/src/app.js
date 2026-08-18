@@ -1,4 +1,4 @@
-import { SMART_EXAMPLES, VOWEL_HELPERS } from "./data/transliteration.js";
+import { createTransliterator } from "./core/transliterator.js";
 import {
   DEFAULT_FONT_PRESET_ID,
   DEFAULT_FONT_SIZE,
@@ -7,16 +7,16 @@ import {
   getFontPreset,
   normalizeFontSize,
 } from "./data/font-presets.js";
-import { createTransliterator } from "./core/transliterator.js";
-import { createEditor } from "./ui/editor.js";
-import { createKeyboard } from "./ui/keyboard.js";
-import { createCharacterPalette } from "./ui/character-palette.js";
-import { createFormatToolbar } from "./ui/format-toolbar.js";
-import { createPreview } from "./ui/preview.js";
-import { createMenuVisibility } from "./ui/menu-visibility.js";
+import { SMART_EXAMPLES, VOWEL_HELPERS } from "./data/transliteration.js";
 import { createAutosave } from "./ui/autosave.js";
-import { bindOpenMarkdown, downloadMarkdown } from "./ui/file-io.js";
+import { createCharacterPalette } from "./ui/character-palette.js";
+import { createEditor } from "./ui/editor.js";
+import { bindOpenDocument, downloadDocxFromJson } from "./ui/file-io.js";
+import { createFormatToolbar } from "./ui/format-toolbar.js";
+import { createKeyboard } from "./ui/keyboard.js";
 import { createMakhzanHandoff } from "./ui/makhzan-handoff.js";
+import { createMenuVisibility } from "./ui/menu-visibility.js";
+import { createPreview } from "./ui/preview.js";
 
 /**
  * Compose data, core, and UI controllers into the running app.
@@ -42,7 +42,7 @@ export function initApp(root = document) {
   const autosave = createAutosave();
   const saved = autosave.load();
 
-  let fileName = saved?.fileName || "document.md";
+  let fileName = saved?.fileName || "document.docx";
   let fontPresetId = saved?.fontPresetId || DEFAULT_FONT_PRESET_ID;
   let fontSize = normalizeFontSize(saved?.fontSize ?? DEFAULT_FONT_SIZE);
 
@@ -55,7 +55,7 @@ export function initApp(root = document) {
     element: editorEl,
     statusEl,
     getModeLabel: () => (modeSelect.value === "phonetic" ? "Phonetic" : "Direct"),
-    initialMarkdown: saved?.markdown ?? "",
+    initialHTML: saved?.html ?? "",
     handleKeyDown: (event) => keyboard?.handlePhysicalKeydown(event),
     onUpdate: () => {
       persist();
@@ -92,7 +92,6 @@ export function initApp(root = document) {
     card: root.querySelector("#previewCard"),
     body: root.querySelector("#previewBody"),
     toggleButton: root.querySelector("#previewBtn"),
-    modesEl: root.querySelector("#previewModes"),
     countEl: root.querySelector("#previewCount"),
     editor,
   });
@@ -110,7 +109,7 @@ export function initApp(root = document) {
   });
 
   function setFileName(name) {
-    fileName = name || "document.md";
+    fileName = name || "document.docx";
     if (fileNameEl) fileNameEl.textContent = fileName;
   }
 
@@ -129,7 +128,7 @@ export function initApp(root = document) {
 
   function persist() {
     autosave.schedule({
-      markdown: editor.getMarkdown(),
+      html: editor.getHTML(),
       fontPresetId,
       fontSize,
       fileName,
@@ -146,7 +145,7 @@ export function initApp(root = document) {
             ? `${preset.label} (installed locally)`
             : preset.label;
           return option;
-        })
+        }),
       );
     }
     if (fontSizeSelect) {
@@ -156,7 +155,7 @@ export function initApp(root = document) {
           option.value = String(size);
           option.textContent = `${size} px`;
           return option;
-        })
+        }),
       );
     }
   }
@@ -170,7 +169,7 @@ export function initApp(root = document) {
           item.querySelector("kbd").textContent = latin;
           item.querySelector(".nastaliq").textContent = unicode;
           return item;
-        })
+        }),
       );
     }
     if (vowelsEl) {
@@ -182,7 +181,7 @@ export function initApp(root = document) {
           item.querySelector("kbd").textContent = latin;
           item.querySelector(".nastaliq").textContent = unicode;
           return item;
-        })
+        }),
       );
     }
   }
@@ -196,27 +195,45 @@ export function initApp(root = document) {
 
   root.querySelector("#copyBtn")?.addEventListener("click", () => editor.copy());
 
-  root.querySelector("#downloadBtn")?.addEventListener("click", () => {
+  root.querySelector("#printBtn")?.addEventListener("click", () => {
     keyboard.flushTranslit();
-    const savedName = downloadMarkdown(editor.getMarkdown(), fileName);
-    setFileName(savedName);
-    persist();
-    editor.updateStatus("Downloaded");
-    setTimeout(() => editor.updateStatus(), 1200);
+    window.print();
   });
 
-  bindOpenMarkdown({
+  root.querySelector("#downloadBtn")?.addEventListener("click", async () => {
+    keyboard.flushTranslit();
+    const preset = getFontPreset(fontPresetId);
+    try {
+      const savedName = await downloadDocxFromJson(editor.getJSON(), fileName, {
+        fontFamily: preset.docxFont,
+        fontSizePx: fontSize,
+        lineHeight: preset.lineHeight,
+      });
+      setFileName(savedName);
+      persist();
+      editor.updateStatus("Downloaded");
+    } catch (error) {
+      editor.updateStatus(error?.message || "Download failed");
+    }
+    setTimeout(() => editor.updateStatus(), 1800);
+  });
+
+  bindOpenDocument({
     button: root.querySelector("#openBtn"),
     input: root.querySelector("#openFileInput"),
-    onOpen: ({ markdown, fileName: openedName }) => {
+    onOpen: ({ html, fileName: openedName }) => {
       keyboard.flushTranslit();
       transliterator.reset();
-      editor.setMarkdown(markdown);
+      editor.setHTML(html);
       setFileName(openedName);
       persist();
       editor.focus();
       editor.updateStatus("Opened");
       setTimeout(() => editor.updateStatus(), 1200);
+    },
+    onError: (error) => {
+      editor.updateStatus(error?.message || "Could not open file");
+      setTimeout(() => editor.updateStatus(), 2800);
     },
   });
 
@@ -260,7 +277,7 @@ export function initApp(root = document) {
   window.addEventListener("blur", () => keyboard.resetModifiers());
   window.addEventListener("beforeunload", () => {
     autosave.flush({
-      markdown: editor.getMarkdown(),
+      html: editor.getHTML(),
       fontPresetId,
       fontSize,
       fileName,

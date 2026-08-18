@@ -1,5 +1,5 @@
-import { describe, it, before, after } from "node:test";
 import assert from "node:assert/strict";
+import { after, before, describe, it } from "node:test";
 import { Window } from "happy-dom";
 
 const window = new Window({ url: "https://localhost/" });
@@ -33,9 +33,8 @@ try {
 const { createPreview } = await import("../src/ui/preview.js");
 
 /** Minimal editor stand-in: the preview only needs these three reads. */
-function fakeEditor(markdown, html, text) {
+function fakeEditor(html, text) {
   return {
-    getMarkdown: () => markdown,
     getHTML: () => html,
     get text() {
       return text;
@@ -47,7 +46,6 @@ describe("preview panel", () => {
   let card;
   let body;
   let toggleButton;
-  let modesEl;
   let countEl;
   let preview;
 
@@ -57,28 +55,23 @@ describe("preview panel", () => {
     toggleButton = document.createElement("button");
     countEl = document.createElement("span");
 
-    modesEl = document.createElement("div");
-    for (const mode of ["rendered", "markdown"]) {
-      const button = document.createElement("button");
-      button.dataset.preview = mode;
-      modesEl.appendChild(button);
-    }
-
-    document.body.append(card, body, toggleButton, modesEl, countEl);
+    document.body.append(card, body, toggleButton, countEl);
 
     preview = createPreview({
       card,
       body,
       toggleButton,
-      modesEl,
       countEl,
-      editor: fakeEditor("# سلام\n\nمتن", "<h1>سلام</h1><p>متن</p>", "سلام متن"),
+      editor: fakeEditor(
+        "<h1>\u0633\u0644\u0627\u0645</h1><p>\u0645\u062a\u0646</p>",
+        "\u0633\u0644\u0627\u0645 \u0645\u062a\u0646",
+      ),
     });
     preview.init();
   });
 
   after(() => {
-    for (const el of [card, body, toggleButton, modesEl, countEl]) el.remove();
+    for (const el of [card, body, toggleButton, countEl]) el.remove();
   });
 
   it("starts closed and hides the card", () => {
@@ -96,27 +89,13 @@ describe("preview panel", () => {
 
     const rendered = body.querySelector(".preview-rendered");
     assert.ok(rendered);
-    assert.equal(rendered.querySelector("h1").textContent, "سلام");
+    assert.equal(rendered.querySelector("h1").textContent, "\u0633\u0644\u0627\u0645");
     assert.equal(rendered.getAttribute("dir"), "rtl");
     assert.equal(rendered.getAttribute("lang"), "ks");
   });
 
   it("reports word and character counts", () => {
-    assert.equal(countEl.textContent, "2 words · 8 characters");
-  });
-
-  it("switches to the raw Markdown view", () => {
-    modesEl.querySelector('[data-preview="markdown"]').click();
-    assert.equal(preview.mode, "markdown");
-
-    const pre = body.querySelector("pre.preview-markdown");
-    assert.ok(pre);
-    assert.equal(pre.textContent, "# سلام\n\nمتن");
-    assert.equal(pre.getAttribute("dir"), "ltr");
-    assert.equal(
-      modesEl.querySelector('[data-preview="markdown"]').getAttribute("aria-pressed"),
-      "true"
-    );
+    assert.equal(countEl.textContent, "2 words \u00b7 8 characters");
   });
 
   it("clears the body when closed again", () => {

@@ -1,12 +1,12 @@
 import {
-  KEYBOARD_ROWS,
-  KEY_BY_CODE,
-  KEY_CODES,
-  LAYERS,
-  LAYER_LABELS,
   faceDisplay,
   isCharacterKey,
+  KEY_BY_CODE,
+  KEY_CODES,
+  KEYBOARD_ROWS,
   keyFaces,
+  LAYER_LABELS,
+  LAYERS,
   layerFor,
   resolveKeyChar,
 } from "../data/keyboard.js";
@@ -167,7 +167,7 @@ export function createKeyboard({
         rowEl.className = "row";
         rowEl.append(...row.map(renderKey));
         return rowEl;
-      })
+      }),
     );
   }
 
@@ -243,7 +243,7 @@ export function createKeyboard({
       if (!isCharacterKey(key)) return;
       const character = resolveKeyChar(
         event.code,
-        layerFor({ shift: event.shiftKey, alt: event.altKey })
+        layerFor({ shift: event.shiftKey, alt: event.altKey }),
       );
       if (!character) {
         // Unassigned layer slot: swallow the keystroke rather than letting the

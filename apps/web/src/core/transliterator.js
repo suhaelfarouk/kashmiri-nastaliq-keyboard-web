@@ -1,4 +1,4 @@
-import { PHONETIC_RULES, COMBINING_MARKS, MAX_BUFFER_LENGTH } from "../data/transliteration.js";
+import { COMBINING_MARKS, MAX_BUFFER_LENGTH, PHONETIC_RULES } from "../data/transliteration.js";
 
 /**
  * Pure buffered longest-match phonetic engine. No DOM access.

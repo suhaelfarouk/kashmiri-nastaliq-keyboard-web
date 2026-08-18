@@ -106,9 +106,10 @@ and the native review field intentionally remains on the shared Noto default.
   (SIL Open Font License 1.1, `assets/fonts/OFL.txt`, surfaced through
   `LicenseRegistry`).
 - Style and RTL wrapper live in `lib/core/ui/kashmiri_text.dart`
-  (28 px, line height 2.05, `Locale('ks')`, `TextDirection.rtl`), matching the
-  web editor's `--editor-size` and `--editor-leading` in `apps/web/style.css`.
-  Keep both sides in step; changing one alone makes the handoff look different.
+  (28 px, line height 2.05, `Locale('ks')`, `TextDirection.rtl`). Leading
+  matches the web editor's `--editor-leading`. Size stays at 28 px on device
+  even though the web default is 16 px, so Nastaliq does not clip in a
+  phone-width field.
 - The bundled face is a variable font, so the weight axis is pinned to 400
   (`fontVariations`) to match the web editor's regular weight.
 - Leading is distributed evenly (`TextLeadingDistribution.even`) so tall

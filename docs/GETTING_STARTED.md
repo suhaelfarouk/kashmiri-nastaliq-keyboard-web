@@ -5,7 +5,7 @@ where”, see [`DEPLOYMENT.md`](DEPLOYMENT.md).
 
 ## Path A — use the web keyboard only
 
-Goal: type Kashmiri Nastaliq Markdown in the browser.
+Goal: type Kashmiri Nastaliq in the browser and save `.docx` files.
 
 1. Install Node.js `^20.19` or `>=22.12`.
 2. Follow [`../apps/web/README.md`](../apps/web/README.md).

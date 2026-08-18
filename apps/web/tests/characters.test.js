@@ -1,5 +1,5 @@
-import { describe, it } from "node:test";
 import assert from "node:assert/strict";
+import { describe, it } from "node:test";
 import { CHARACTER_GROUPS } from "../src/data/characters.js";
 import { isCombiningMark, markPlacement } from "../src/data/marks.js";
 
@@ -41,9 +41,8 @@ describe("extended character inventory", () => {
       assert.equal(
         [...value].some((character) => discouraged.has(character)),
         false,
-        `discouraged character in ${value}`
+        `discouraged character in ${value}`,
       );
     }
   });
 });
-

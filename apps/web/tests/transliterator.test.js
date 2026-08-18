@@ -1,5 +1,5 @@
-import { describe, it } from "node:test";
 import assert from "node:assert/strict";
+import { describe, it } from "node:test";
 import { createTransliterator } from "../src/core/transliterator.js";
 
 function type(sequence) {
@@ -63,7 +63,7 @@ describe("createTransliterator", () => {
     const t = createTransliterator();
     let out = t.add("k") + t.add("a") + t.commit();
     t.wordBoundary();
-    out += " " + t.add("i") + t.commit();
+    out += ` ${t.add("i")}${t.commit()}`;
     assert.equal(out, "کَ اِ");
     assert.equal(t.isAtWordStart(), false);
   });

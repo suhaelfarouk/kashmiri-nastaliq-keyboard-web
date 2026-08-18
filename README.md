@@ -73,7 +73,7 @@ Operator-only. See [`tools/model/README.md`](tools/model/README.md) and
 
 ```text
 apps/
-  web/                 Vite Kashmiri Nastaliq Markdown editor → Vercel
+  web/                 Vite Kashmiri Nastaliq document editor → Vercel
   native/              Flutter on-device STT app
 tools/
   model/               NeMo → ONNX export, sign, R2 publish

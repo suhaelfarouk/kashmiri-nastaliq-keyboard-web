@@ -1,5 +1,5 @@
-import { describe, it } from "node:test";
 import assert from "node:assert/strict";
+import { describe, it } from "node:test";
 import {
   AUTOSAVE_VERSION,
   createAutosave,
@@ -7,32 +7,50 @@ import {
   parseAutosave,
   serializeAutosave,
 } from "../src/ui/autosave.js";
-import { normalizeMarkdownFileName } from "../src/ui/file-io.js";
+import { normalizeDocxFileName } from "../src/ui/file-io.js";
 
 describe("autosave", () => {
-  it("round-trips a versioned payload", () => {
+  it("round-trips a versioned HTML payload", () => {
     const payload = createAutosavePayload({
-      markdown: "# کٲشُری\n\n**bold**",
+      html: "<h1>کٲشُری</h1><p><strong>bold</strong></p>",
       fontPresetId: "gulmarg-nastaliq",
       fontSize: 32,
-      fileName: "note.md",
+      fileName: "note.docx",
       updatedAt: 123,
     });
     const restored = parseAutosave(serializeAutosave(payload));
     assert.deepEqual(restored, {
       version: AUTOSAVE_VERSION,
-      markdown: "# کٲشُری\n\n**bold**",
+      html: "<h1>کٲشُری</h1><p><strong>bold</strong></p>",
       fontPresetId: "gulmarg-nastaliq",
       fontSize: 32,
-      fileName: "note.md",
+      fileName: "note.docx",
       updatedAt: 123,
     });
+    assert.equal(AUTOSAVE_VERSION, 2);
+  });
+
+  it("migrates a v1 Markdown draft to escaped HTML", () => {
+    const restored = parseAutosave(
+      JSON.stringify({
+        version: 1,
+        markdown: "سلام\n\n**bold**",
+        fontPresetId: "noto-nastaliq",
+        fontSize: 28,
+        fileName: "old.md",
+        updatedAt: 1,
+      }),
+    );
+    assert.equal(restored.version, 2);
+    assert.match(restored.html, /سلام/);
+    assert.match(restored.html, /\*\*bold\*\*/);
+    assert.equal(restored.fileName, "old.docx");
   });
 
   it("rejects invalid or mismatched versions", () => {
     assert.equal(parseAutosave(null), null);
     assert.equal(parseAutosave("{"), null);
-    assert.equal(parseAutosave(JSON.stringify({ version: 999, markdown: "x" })), null);
+    assert.equal(parseAutosave(JSON.stringify({ version: 999, html: "x" })), null);
   });
 
   it("persists through a storage adapter", () => {
@@ -46,14 +64,14 @@ describe("autosave", () => {
     assert.equal(autosave.load(), null);
     assert.equal(
       autosave.save({
-        markdown: "سلام",
+        html: "<p>سلام</p>",
         fontPresetId: "scheherazade",
         fontSize: 24,
-        fileName: "a.md",
+        fileName: "a.docx",
       }),
-      true
+      true,
     );
-    assert.equal(autosave.load().markdown, "سلام");
+    assert.equal(autosave.load().html, "<p>سلام</p>");
     assert.equal(autosave.load().fontPresetId, "scheherazade");
     assert.equal(autosave.load().fontSize, 24);
     autosave.clear();
@@ -62,10 +80,12 @@ describe("autosave", () => {
 });
 
 describe("file naming", () => {
-  it("normalizes Markdown filenames", () => {
-    assert.equal(normalizeMarkdownFileName("story"), "story.md");
-    assert.equal(normalizeMarkdownFileName("story.MD"), "story.MD");
-    assert.equal(normalizeMarkdownFileName("note.md"), "note.md");
-    assert.equal(normalizeMarkdownFileName("  "), "document.md");
+  it("normalizes Word filenames", () => {
+    assert.equal(normalizeDocxFileName("story"), "story.docx");
+    assert.equal(normalizeDocxFileName("story.DOCX"), "story.DOCX");
+    assert.equal(normalizeDocxFileName("note.docx"), "note.docx");
+    assert.equal(normalizeDocxFileName("note.md"), "note.docx");
+    assert.equal(normalizeDocxFileName("note.doc"), "note.docx");
+    assert.equal(normalizeDocxFileName("  "), "document.docx");
   });
 });

@@ -94,13 +94,16 @@ application:
 
 - insert text;
 - delete/backspace;
-- read/write Markdown;
+- read/write HTML and Tiptap JSON;
+- copy the visible text (and HTML when the clipboard allows it);
 - set typography;
-- copy Markdown;
 - focus and status updates.
 
-The document is Markdown. Font face and size are display preferences and are
-not embedded into exported Markdown.
+The document is a WYSIWYG ProseMirror tree. Open and Download serialize that
+tree as OOXML `.docx` (`src/core/docx-document.js`): Mammoth converts `.docx`
+to HTML on open; the `docx` package builds a right-to-left `.docx` on download.
+Legacy Word 97–2003 `.doc` files are rejected. Font face and size are named in
+the `.docx` but the font file is not embedded.
 
 Hosted and self-hosted choices are listed in `src/data/font-presets.js`. Faiz
 Lahori Nastaleeq is different: it is proprietary, so its preset resolves only a
@@ -119,8 +122,10 @@ The on-screen keyboard and physical keyboard call the same insertion path.
 
 ### Persistence
 
-`src/ui/autosave.js` stores the current draft and editor preferences in browser
-local storage. There is no server-side document storage.
+`src/ui/autosave.js` stores the current HTML draft and editor preferences in
+browser local storage under `makhzan-v1`. Payload version 2 is HTML. Version 1
+Markdown drafts are migrated as escaped paragraphs so typed text is not lost.
+There is no server-side document storage.
 
 ### Makhzan handoff
 

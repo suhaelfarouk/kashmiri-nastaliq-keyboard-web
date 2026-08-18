@@ -1,10 +1,7 @@
-import { describe, it } from "node:test";
 import assert from "node:assert/strict";
+import { describe, it } from "node:test";
 import { Window } from "happy-dom";
-import {
-  MENU_VISIBILITY_KEY,
-  createMenuVisibility,
-} from "../src/ui/menu-visibility.js";
+import { createMenuVisibility, MENU_VISIBILITY_KEY } from "../src/ui/menu-visibility.js";
 
 function setup(savedValue) {
   const window = new Window();

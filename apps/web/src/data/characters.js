@@ -113,11 +113,7 @@ export const CHARACTER_GROUPS = [
   {
     id: "other-marks",
     label: "Other marks",
-    items: [
-      mark("ْ", "sukun / Kashmiri jazm"),
-      mark("ّ", "shadda"),
-      mark("ؔ", "takhallus sign"),
-    ],
+    items: [mark("ْ", "sukun / Kashmiri jazm"), mark("ّ", "shadda"), mark("ؔ", "takhallus sign")],
   },
   {
     id: "punctuation",
@@ -142,9 +138,6 @@ export const CHARACTER_GROUPS = [
   {
     id: "digits",
     label: "Digits",
-    items: [..."۰۱۲۳۴۵۶۷۸۹"].map((value, index) =>
-      item(value, `digit ${index}`)
-    ),
+    items: [..."۰۱۲۳۴۵۶۷۸۹"].map((value, index) => item(value, `digit ${index}`)),
   },
 ];
-

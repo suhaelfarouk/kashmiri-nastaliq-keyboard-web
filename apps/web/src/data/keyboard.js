@@ -3,12 +3,21 @@
  * One source of truth for rendering, on-screen clicks, and physical key mapping.
  *
  * Four layers per key, following the convention used by desktop Kashmiri layouts:
- *   base      — everyday letters
- *   shift     — alternate letters and the most common marks
- *   alt       — aspirated digraphs, vowel sequences, remaining combining marks
- *   altShift  — loan-word consonants, precomposed vowels, punctuation, controls
+ *   base      — the primary letter for the key
+ *   shift     — a related/alternate letter for the same key, when one exists
+ *   alt       — aspirated digraphs, vowel sequences, and combining marks
+ *   altShift  — remaining combining marks, loan-word consonants, punctuation, controls
  *
- * A layer may be left undefined; that key simply inserts nothing on that layer.
+ * Alphabet characters are kept in base/shift wherever a key has one or two natural
+ * letter variants, so typing plain Kashmiri text rarely needs alt at all. Diacritics
+ * (bare combining marks) live on alt/altShift instead of base/shift. A few keys with
+ * more than two related letters (heh, hah, and retroflex/loan variants) still spill a
+ * third or fourth letter into alt/altShift — an unavoidable trade-off with only four
+ * layers per key. Every mark also remains reachable from the number row's alt layer,
+ * which acts as a complete diacritics keyboard on its own.
+ *
+ * A layer may be left undefined; that key simply inserts nothing on that layer, and
+ * an undefined shift falls back to the base face (rendered with the "same-face" style).
  */
 
 import { markPlacement } from "./marks.js";
@@ -67,14 +76,14 @@ export const KEYBOARD_ROWS = [
     { code: "Equal", label: "=", base: "،", shift: "=", alt: "ٓ", altShift: ZWJ },
   ],
   [
-    { code: "KeyQ", label: "q", base: "ق", shift: "ٖ" },
+    { code: "KeyQ", label: "q", base: "ق", alt: "ٖ" },
     { code: "KeyW", label: "w", base: "و", shift: "ؤ", alt: "وٗ", altShift: "وٚ" },
     { code: "KeyE", label: "e", base: "ے", shift: "ٲ", alt: "ےٚ", altShift: "یٚ" },
     { code: "KeyR", label: "r", base: "ر", shift: "ڑ", alt: "ڑھ" },
     { code: "KeyT", label: "t", base: "ت", shift: "ٹ", alt: "تھ", altShift: "ٹھ" },
     { code: "KeyY", label: "y", base: "ی", shift: "ؠ", alt: "یٖ", altShift: "یٚ" },
-    { code: "KeyU", label: "u", base: "ُ", shift: "ٗ", alt: "وٗ" },
-    { code: "KeyI", label: "i", base: "ِ", shift: "ٕ", alt: "ٖ", altShift: "ٟ" },
+    { code: "KeyU", label: "u", base: "و", shift: "ؤ", alt: "ُ", altShift: "ٗ" },
+    { code: "KeyI", label: "i", base: "ی", shift: "ؠ", alt: "ِ", altShift: "ٕ" },
     { code: "KeyO", label: "o", base: "ۆ", shift: "ۄ", alt: "وٚ", altShift: "ۄا" },
     { code: "KeyP", label: "p", base: "پ", shift: "ث", alt: "پھ", altShift: "ف" },
     { code: "BracketLeft", label: "[", base: "[", shift: "]", alt: "“", altShift: "(" },
@@ -91,7 +100,7 @@ export const KEYBOARD_ROWS = [
     { code: "KeyK", label: "k", base: "ک", shift: "خ", alt: "کھ", altShift: "ق" },
     { code: "KeyL", label: "l", base: "ل", shift: "ڵ", alt: "لا" },
     { code: "Semicolon", label: ";", base: "؛", shift: ":", alt: "؍", altShift: "…" },
-    { code: "Quote", label: "'", base: "ء", shift: "ٔ", alt: "إ", altShift: "ٓ" },
+    { code: "Quote", label: "'", base: "ء", shift: "إ", alt: "ٔ", altShift: "ٓ" },
   ],
   [
     { code: "KeyZ", label: "z", base: "ز", shift: "ژ", alt: "ژھ", altShift: "ض" },
@@ -114,9 +123,7 @@ export const KEYBOARD_ROWS = [
 ];
 
 /** Flat lookup: code → KeyDef */
-export const KEY_BY_CODE = Object.fromEntries(
-  KEYBOARD_ROWS.flat().map((key) => [key.code, key])
-);
+export const KEY_BY_CODE = Object.fromEntries(KEYBOARD_ROWS.flat().map((key) => [key.code, key]));
 
 /** True for keys that produce text rather than acting as a modifier. */
 export function isCharacterKey(key) {

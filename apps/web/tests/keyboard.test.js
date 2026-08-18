@@ -1,13 +1,13 @@
-import { describe, it } from "node:test";
 import assert from "node:assert/strict";
+import { describe, it } from "node:test";
 import {
-  KEYBOARD_ROWS,
-  KEY_BY_CODE,
-  KEY_CODES,
-  LAYERS,
   faceDisplay,
   isCharacterKey,
+  KEY_BY_CODE,
+  KEY_CODES,
+  KEYBOARD_ROWS,
   keyFaces,
+  LAYERS,
   layerFor,
   resolveKeyChar,
 } from "../src/data/keyboard.js";
@@ -36,8 +36,8 @@ describe("keyboard layout", () => {
 
   it("falls back to base on the shift layer but not on alt layers", () => {
     const faces = keyFaces(KEY_BY_CODE.KeyQ);
-    assert.equal(faces[LAYERS.SHIFT], "ٖ");
-    assert.equal(faces[LAYERS.ALT], "");
+    assert.equal(faces[LAYERS.SHIFT], faces[LAYERS.BASE]);
+    assert.equal(faces[LAYERS.ALT], "ٖ");
     assert.equal(resolveKeyChar("KeyQ", LAYERS.ALT_SHIFT), "");
     assert.equal(resolveKeyChar("Digit1", LAYERS.SHIFT), "۱");
   });
@@ -52,7 +52,7 @@ describe("keyboard layout", () => {
 
   it("reaches the extended Kashmiri inventory across the alt layers", () => {
     const reachable = new Set(
-      characterKeys.flatMap((key) => [key.alt, key.altShift]).filter(Boolean)
+      characterKeys.flatMap((key) => [key.alt, key.altShift]).filter(Boolean),
     );
     for (const required of ["پھ", "تھ", "ٹھ", "ژھ", "کھ", "ھ", "نْ", "اٟ", "وٗ", "ۄا", "ْ", "ّ", "ؔ"]) {
       assert.ok(reachable.has(required), `missing ${required}`);

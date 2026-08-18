@@ -3,8 +3,9 @@
 /* Kashmiri Nastaliq face that Google Fonts does not host. */
 @font-face {
   font-family: "Gulmarg Nastaliq";
-  src: local("Gulmarg Nastaleeq"),
-       url("/fonts/GulmargNastaliq.woff2") format("woff2");
+  src:
+    local("Gulmarg Nastaleeq"),
+    url("/fonts/GulmargNastaliq.woff2") format("woff2");
   font-weight: 400 700;
   font-display: swap;
 }
@@ -15,9 +16,7 @@
  */
 @font-face {
   font-family: "Faiz Lahori Nastaleeq Local";
-  src: local("Faiz Lahori Nastaleeq"),
-       local("FaizLahoriNastaleeq"),
-       local("Faiz Lahori Nastaliq");
+  src: local("Faiz Lahori Nastaleeq"), local("FaizLahoriNastaleeq"), local("Faiz Lahori Nastaliq");
   font-weight: 400;
   font-display: swap;
 }
@@ -41,7 +40,7 @@
 
   /* Document typography, shared by the editor and the preview. */
   --editor-font: var(--font-nastaliq);
-  --editor-size: 28px;
+  --editor-size: 16px;
   --editor-leading: 2.05;
 }
 
@@ -56,7 +55,7 @@ body {
   min-height: 100vh;
   background: var(--bg);
   color: var(--fg);
-  font: 400 14px/1.5 var(--font);
+  font: 400 14px / 1.5 var(--font);
 }
 
 .app {
@@ -174,9 +173,11 @@ body {
   border-radius: calc(var(--radius) - 2px);
   background: var(--card);
   color: var(--fg);
-  font: 500 0.8125rem/1 var(--font);
+  font: 500 0.8125rem / 1 var(--font);
   cursor: pointer;
-  transition: background 0.12s ease, border-color 0.12s ease;
+  transition:
+    background 0.12s ease,
+    border-color 0.12s ease;
 }
 
 .btn:hover {
@@ -224,9 +225,12 @@ body {
   border-radius: calc(var(--radius) - 2px);
   background: transparent;
   color: var(--muted-fg);
-  font: 500 0.75rem/1 var(--font);
+  font: 500 0.75rem / 1 var(--font);
   cursor: pointer;
-  transition: background 0.12s ease, color 0.12s ease, border-color 0.12s ease;
+  transition:
+    background 0.12s ease,
+    color 0.12s ease,
+    border-color 0.12s ease;
 }
 
 .format-button:hover {
@@ -247,15 +251,12 @@ body {
   background: var(--border);
 }
 
-/* Exactly one line of room. Drag the bottom edge to grow it; use Preview to
-   read the whole document. */
+/* A true WYSIWYG surface: the editor grows with the document instead of
+   clipping it to one line, so what you type is already the full page —
+   the same content Preview and Print show. */
 .editor-surface {
   --editor-pad-block: 14px;
-  height: calc(var(--editor-size) * var(--editor-leading) + var(--editor-pad-block) * 2);
   min-height: calc(var(--editor-size) * var(--editor-leading) + var(--editor-pad-block) * 2);
-  max-height: 70vh;
-  overflow-y: auto;
-  resize: vertical;
 }
 
 .editor-surface .tiptap,
@@ -299,9 +300,15 @@ body {
   line-height: 1.65;
 }
 
-.editor-surface .ProseMirror h1 { font-size: 1.55em; }
-.editor-surface .ProseMirror h2 { font-size: 1.3em; }
-.editor-surface .ProseMirror h3 { font-size: 1.12em; }
+.editor-surface .ProseMirror h1 {
+  font-size: 1.55em;
+}
+.editor-surface .ProseMirror h2 {
+  font-size: 1.3em;
+}
+.editor-surface .ProseMirror h3 {
+  font-size: 1.12em;
+}
 
 .editor-surface .ProseMirror ul,
 .editor-surface .ProseMirror ol {
@@ -397,34 +404,8 @@ body {
 }
 
 .preview-title {
-  font: 500 0.8125rem/1 var(--font);
+  font: 500 0.8125rem / 1 var(--font);
   color: var(--muted-fg);
-}
-
-.preview-modes {
-  display: inline-flex;
-  gap: 4px;
-}
-
-.preview-mode {
-  padding: 5px 10px;
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  background: var(--card);
-  color: var(--muted-fg);
-  font: 500 0.75rem/1 var(--font);
-  cursor: pointer;
-  transition: background 0.12s ease, color 0.12s ease, border-color 0.12s ease;
-}
-
-.preview-mode:hover {
-  background: #f5f5f5;
-}
-
-.preview-mode.active {
-  background: var(--accent);
-  border-color: var(--accent);
-  color: var(--accent-fg);
 }
 
 .preview-body {
@@ -457,9 +438,15 @@ body {
   line-height: 1.65;
 }
 
-.preview-rendered h1 { font-size: 1.55em; }
-.preview-rendered h2 { font-size: 1.3em; }
-.preview-rendered h3 { font-size: 1.12em; }
+.preview-rendered h1 {
+  font-size: 1.55em;
+}
+.preview-rendered h2 {
+  font-size: 1.3em;
+}
+.preview-rendered h3 {
+  font-size: 1.12em;
+}
 
 .preview-rendered ul,
 .preview-rendered ol {
@@ -515,19 +502,8 @@ body {
   margin: 1em 0;
 }
 
-.preview-markdown {
-  margin: 0;
-  padding: 20px clamp(16px, 4vw, 40px);
-  direction: ltr;
-  text-align: left;
-  white-space: pre-wrap;
-  overflow-wrap: break-word;
-  color: var(--muted-fg);
-  font: 400 0.8125rem / 1.7 var(--font-mono);
-}
-
 .badge {
-  font: 500 0.75rem/1 var(--font-mono);
+  font: 500 0.75rem / 1 var(--font-mono);
   color: var(--muted);
   padding: 4px 8px;
   border: 1px solid var(--border);
@@ -566,9 +542,12 @@ body {
   border-radius: 999px;
   background: var(--card);
   color: var(--muted-fg);
-  font: 500 0.75rem/1 var(--font);
+  font: 500 0.75rem / 1 var(--font);
   cursor: pointer;
-  transition: background 0.12s ease, color 0.12s ease, border-color 0.12s ease;
+  transition:
+    background 0.12s ease,
+    color 0.12s ease,
+    border-color 0.12s ease;
 }
 
 .layer-button:hover {
@@ -614,7 +593,9 @@ body {
   font: 400 24px / 1.2 var(--font-nastaliq);
   direction: rtl;
   cursor: pointer;
-  transition: background 0.1s ease, border-color 0.1s ease;
+  transition:
+    background 0.1s ease,
+    border-color 0.1s ease;
 }
 
 .key:hover {
@@ -906,7 +887,9 @@ body {
   color: var(--fg);
   font: 400 21px / 1.2 var(--font-nastaliq);
   cursor: pointer;
-  transition: background 0.1s ease, border-color 0.1s ease;
+  transition:
+    background 0.1s ease,
+    border-color 0.1s ease;
 }
 
 .character-button .glyph {
@@ -1015,7 +998,6 @@ kbd {
 
   .editor-surface {
     --editor-pad-block: 12px;
-    max-height: 50vh;
   }
 
   .editor-surface .tiptap,
@@ -1139,12 +1121,46 @@ kbd {
   .key,
   .layer-button,
   .format-button,
-  .preview-mode,
   .character-button,
   .face-base,
   .face-shift,
   .face-alt,
   .face-alt-shift {
     transition: none;
+  }
+}
+
+/* ---------- Print ----------
+   Print (and "Print to PDF") always renders the editor's own content —
+   the same WYSIWYG surface the user was just typing into — with every
+   app control hidden. Nothing here depends on Preview being open. */
+@media print {
+  .optional-menu,
+  .view-controls,
+  .makhzan-handoff,
+  .keyboard-card,
+  .preview-card {
+    display: none !important;
+  }
+
+  body {
+    background: #fff;
+  }
+
+  .app {
+    width: auto;
+    max-width: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .editor-card {
+    border: none;
+    border-radius: 0;
+  }
+
+  .editor-surface .tiptap,
+  .editor-surface .ProseMirror {
+    padding: 0;
   }
 }

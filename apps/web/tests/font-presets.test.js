@@ -1,6 +1,6 @@
-import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
+import { describe, it } from "node:test";
 import {
   DEFAULT_FONT_PRESET_ID,
   DEFAULT_FONT_SIZE,
@@ -15,12 +15,7 @@ describe("font presets", () => {
   it("offers the curated hosted and local faces", () => {
     assert.deepEqual(
       FONT_PRESETS.map((preset) => preset.id),
-      [
-        "noto-nastaliq",
-        "gulmarg-nastaliq",
-        "faiz-lahori",
-        "scheherazade",
-      ]
+      ["noto-nastaliq", "gulmarg-nastaliq", "faiz-lahori", "scheherazade"],
     );
     assert.equal(DEFAULT_FONT_PRESET_ID, "noto-nastaliq");
   });
@@ -32,9 +27,10 @@ describe("font presets", () => {
     assert.match(getFontPreset("scheherazade").cssFamily, /Scheherazade New/);
   });
 
-  it("gives every preset a family and leading", () => {
+  it("gives every preset a family, Word face name, and leading", () => {
     for (const preset of FONT_PRESETS) {
       assert.ok(preset.cssFamily.includes(preset.label.split(" ")[0]), preset.id);
+      assert.ok(preset.docxFont, `${preset.id} needs a Word font name`);
       assert.ok(preset.lineHeight > 1.5, `${preset.id} needs generous leading`);
     }
   });
@@ -62,20 +58,22 @@ describe("font presets", () => {
     assert.ok(!googleFontsUrl().includes("Faiz"));
 
     const css = readFileSync(new URL("../style.css", import.meta.url), "utf8");
-    const declaration = css.match(
-      /@font-face\s*\{[^}]*"Faiz Lahori Nastaleeq Local"[^}]*\}/s
-    )?.[0];
+    const declaration = css.match(/@font-face\s*\{[^}]*"Faiz Lahori Nastaleeq Local"[^}]*\}/s)?.[0];
     assert.ok(declaration, "local Faiz @font-face must exist");
     assert.match(declaration, /local\("Faiz Lahori Nastaleeq"\)/);
     assert.ok(!declaration.includes("url("), "Faiz must not be redistributed");
   });
 
   it("snaps font sizes to the nearest supported step", () => {
+    assert.equal(DEFAULT_FONT_SIZE, 16);
     assert.ok(FONT_SIZES.includes(DEFAULT_FONT_SIZE));
+    assert.ok(FONT_SIZES.includes(12));
+    assert.ok(FONT_SIZES.includes(14));
+    assert.equal(normalizeFontSize(16), 16);
     assert.equal(normalizeFontSize(28), 28);
     assert.equal(normalizeFontSize("32"), 32);
     assert.equal(normalizeFontSize(29), 28);
-    assert.equal(normalizeFontSize(1), 18);
+    assert.equal(normalizeFontSize(1), 12);
     assert.equal(normalizeFontSize(999), 48);
     assert.equal(normalizeFontSize("abc"), DEFAULT_FONT_SIZE);
     assert.equal(normalizeFontSize(undefined), DEFAULT_FONT_SIZE);

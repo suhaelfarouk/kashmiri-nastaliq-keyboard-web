@@ -1,7 +1,6 @@
 import { Editor } from "@tiptap/core";
-import StarterKit from "@tiptap/starter-kit";
-import { Markdown } from "@tiptap/markdown";
 import Placeholder from "@tiptap/extension-placeholder";
+import StarterKit from "@tiptap/starter-kit";
 
 /**
  * UTF-16 length of the last Unicode code point in `text`.
@@ -14,13 +13,14 @@ function lastCodePointUtf16Length(text) {
 }
 
 /**
- * Tiptap-backed editor that keeps the caret API used by the keyboard/palette.
+ * Tiptap-backed WYSIWYG editor. The document is HTML/JSON in memory;
+ * Word .docx is the Open/Download interchange format.
  */
 export function createEditor({
   element,
   statusEl,
   getModeLabel,
-  initialMarkdown = "",
+  initialHTML = "",
   placeholder = "یِتھ کٔنہٕ کٲشُری لیکھو...",
   onUpdate,
   onSelectionUpdate,
@@ -38,16 +38,11 @@ export function createEditor({
           HTMLAttributes: { rel: "noopener noreferrer", target: "_blank" },
         },
       }),
-      Markdown.configure({
-        indentation: { style: "space", size: 2 },
-        markedOptions: { gfm: true, breaks: false },
-      }),
       Placeholder.configure({
         placeholder,
       }),
     ],
-    content: initialMarkdown || "",
-    contentType: "markdown",
+    content: initialHTML || "",
     editorProps: {
       attributes: {
         lang: "ks",
@@ -89,7 +84,7 @@ export function createEditor({
 
   function backspace() {
     const { state } = editor;
-    const { from, to, empty } = state.selection;
+    const { from, empty } = state.selection;
 
     if (!empty) {
       editor.chain().focus().deleteSelection().run();
@@ -105,17 +100,25 @@ export function createEditor({
       $from.parentOffset - lookBehind,
       $from.parentOffset,
       undefined,
-      "\ufffc"
+      "\ufffc",
     );
 
     if (!textBefore) {
-      editor.chain().focus().deleteRange({ from: from - 1, to: from }).run();
+      editor
+        .chain()
+        .focus()
+        .deleteRange({ from: from - 1, to: from })
+        .run();
       updateStatus();
       return;
     }
 
     const deleteLen = lastCodePointUtf16Length(textBefore);
-    editor.chain().focus().deleteRange({ from: from - deleteLen, to: from }).run();
+    editor
+      .chain()
+      .focus()
+      .deleteRange({ from: from - deleteLen, to: from })
+      .run();
     updateStatus();
   }
 
@@ -125,26 +128,34 @@ export function createEditor({
     updateStatus();
   }
 
-  function getMarkdown() {
-    return editor.getMarkdown?.() ?? "";
-  }
-
   function getHTML() {
     return editor.getHTML();
   }
 
-  function setMarkdown(markdown, { emitUpdate = true } = {}) {
-    editor.commands.setContent(markdown ?? "", {
-      contentType: "markdown",
-      emitUpdate,
-    });
+  function getJSON() {
+    return editor.getJSON();
+  }
+
+  function setHTML(html, { emitUpdate = true } = {}) {
+    editor.commands.setContent(html ?? "", { emitUpdate });
     updateStatus();
   }
 
   async function copy() {
+    const text = editor.getText();
+    const html = getHTML();
     try {
-      await navigator.clipboard.writeText(getMarkdown());
-      updateStatus("Copied Markdown");
+      if (globalThis.ClipboardItem && navigator.clipboard?.write) {
+        await navigator.clipboard.write([
+          new ClipboardItem({
+            "text/plain": new Blob([text], { type: "text/plain" }),
+            "text/html": new Blob([html], { type: "text/html" }),
+          }),
+        ]);
+      } else {
+        await navigator.clipboard.writeText(text);
+      }
+      updateStatus("Copied");
     } catch {
       updateStatus("Select and copy manually");
     }
@@ -152,8 +163,8 @@ export function createEditor({
   }
 
   /**
-   * Apply document typography (never to the Markdown). Set on the document root
-   * so the editor and the preview panel stay in sync.
+   * Apply document typography on the document root so the editor, preview,
+   * and print view stay in sync. Named in exported .docx files; not embedded.
    */
   function setTypography({ cssFamily, lineHeight, fontSize } = {}) {
     const host = element.ownerDocument?.documentElement ?? element;
@@ -168,15 +179,18 @@ export function createEditor({
     clear,
     copy,
     updateStatus,
-    getMarkdown,
     getHTML,
-    setMarkdown,
+    getJSON,
+    setHTML,
     setTypography,
     get value() {
-      return getMarkdown();
+      return getHTML();
     },
     get text() {
       return editor.getText();
+    },
+    get json() {
+      return getJSON();
     },
     get dom() {
       return editor.view.dom;

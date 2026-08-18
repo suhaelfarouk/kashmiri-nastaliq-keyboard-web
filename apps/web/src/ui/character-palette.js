@@ -59,4 +59,3 @@ export function createCharacterPalette({ root, editor, beforeInsert }) {
 
   return { init };
 }
-

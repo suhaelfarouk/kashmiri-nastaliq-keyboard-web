@@ -13,7 +13,7 @@ start with [`GETTING_STARTED.md`](GETTING_STARTED.md).
 There are three connected parts:
 
 1. **Web editor** — a Vite application for typing and editing Kashmiri
-   Nastaliq Markdown.
+   Nastaliq as a WYSIWYG Word (`.docx`) document.
 2. **Makhzan** — a Flutter application that records speech and performs
    speech-to-text locally.
 3. **Model tools** — Python scripts that convert the AI4Bharat NeMo model to
@@ -123,8 +123,8 @@ https://makhzan-project.vercel.app
 Use the **Font** menu to change document typography. Faiz Lahori Nastaleeq is
 marked **installed locally** because it is proprietary: the site uses it only
 when a licensed copy is already installed on that device. Otherwise the browser
-falls back to Gulmarg Nastaliq and Noto Nastaliq Urdu. Markdown exports do not
-embed the selected font.
+falls back to Gulmarg Nastaliq and Noto Nastaliq Urdu. Downloaded `.docx` files
+name the selected font but do not embed it.
 
 ### How the web application starts
 

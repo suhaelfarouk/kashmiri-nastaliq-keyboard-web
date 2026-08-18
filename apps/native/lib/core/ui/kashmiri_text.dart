@@ -2,11 +2,10 @@ import 'package:flutter/widgets.dart';
 
 /// Presentation rules for Kashmiri Perso-Arabic text.
 ///
-/// Mirrors the web editor document typography (`--editor-font`, `--editor-size`,
-/// `--editor-leading` in `apps/web/style.css`) so a transcript looks the same
-/// before and after the clipboard handoff. Nastaliq stacks glyphs steeply, so it
-/// needs a much larger line height than Latin text or ascenders/descenders
-/// collide.
+/// Shares the web editor's default face (Noto Nastaliq Urdu) and leading so a
+/// transcript is readable before the clipboard handoff. Size stays at 28 px on
+/// device — larger than the web default of 16 px — because Nastaliq stacks
+/// glyphs steeply and a phone-width field clips them at body size.
 class KashmiriText {
   const KashmiriText._();
 
